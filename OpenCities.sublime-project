@@ -1,0 +1,16 @@
+{
+	"folders":
+	[
+		{
+			"path": "/C/BitNami/wappstack-5.4.17-0/apache2/htdocs/gitprojects/OpenCities"
+		}
+	],
+	"settings":
+	{
+		"sublime-view-in-browser":
+		{
+			"basePath": "/C/BitNami/wappstack-5.4.17-0/apache2/htdocs/gitprojects/OpenCities",
+			"baseUrl": "http://localhost"
+		}
+	}
+}
