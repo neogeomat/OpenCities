@@ -1,8 +1,8 @@
 <html>
 <head>
 	<title></title>
-	<script src="http://localhost/gitprojects/OpenCities/js/OpenLayers.light.js" type="text/javascript"></script>
-	<!--script src="http://openlayers.org/api/2.12/OpenLayers.light.js" type="text/javascript"></script-->
+	<!--script src="http://localhost/gitprojects/OpenCities/js/OpenLayers.light.js" type="text/javascript"></script-->
+	<script src="http://openlayers.org/api/2.12/OpenLayers.light.js" type="text/javascript"></script>
 	<!--style>
 		html, body, #map {margin: 0; width: *; height: *;}
 	</style-->
@@ -96,17 +96,19 @@
 				},
 			}
 		})
-		var odri_schools = new OpenLayers.Layer.Vector('OPENDRI SCHOOLS MAPPING',{
+		var odri_schools = new OpenLayers.Layer.Vector('OPENDRI SCHOOLS MAPPING',	
+		{
 			strategies: [
-			new OpenLayers.Strategy.Fixed()
-				],
+				new OpenLayers.Strategy.Fixed()
+			],
 			protocol: new OpenLayers.Protocol.HTTP({
 				url: "data/education.geojson",   //<-- relative or absolute URL to your .osm file
 				format: new OpenLayers.Format.GeoJSON()
 			}),
 			projection: map.displayProjection,
 			styleMap: new OpenLayers.StyleMap({'default':styleschool})
-		});
+		}
+		);
 		map.addLayer(odri_schools);
 
 		var stylehealth = new OpenLayers.Style({
@@ -171,6 +173,14 @@
             
      	map.addControl(selectControl1);
      	selectControl1.activate();*/
+
+
+     	/*var selector = new OpenLayers.Control.SelectFeature(odri_schools,{
+	        hover:true,
+	        autoActivate:true
+    	});
+
+		map.addControl(selector);*/
 	</script>
 </body>
 </html>
