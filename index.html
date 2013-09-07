@@ -1,8 +1,10 @@
 <html>
 <head>
 	<title></title>
-	<!--script src="http://localhost/gitprojects/OpenCities/js/OpenLayers.light.js" type="text/javascript"></script-->
-	<script src="http://openlayers.org/api/2.12/OpenLayers.light.js" type="text/javascript"></script>
+	<script src="http://localhost/OpenLayers-2.12/OpenLayers.light.js" type="text/javascript"></script>
+	<script src="http://localhost/OpenLayers-2.12/addins/stamen-maps.js" type="text/javascript"></script>
+	<!-- // <script src="http://openlayers.org/api/2.12/OpenLayers.light.js" type="text/javascript"></script> -->
+	<!-- // <script type="text/javascript" src="http://maps.stamen.com/js/tile.stamen.js?v1.2.3"></script> -->
 	<!--style>
 		html, body, #map {margin: 0; width: *; height: *;}
 	</style-->
@@ -22,8 +24,10 @@
 		map.addControl(new OpenLayers.Control.LayerSwitcher());
 		// osm = new OpenLayers.Layer.OSM("OSM",null,{attribution: "&copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors (ODbL)"});
 		// map.addLayer(osm);
-		var l = new OpenLayers.Layer.OSM("OpenCycleMap", ['http://tile.opencyclemap.org/cycle/${z}/${x}/${y}.png']);
-    	map.addLayer(l);
+		// 
+
+		map.addLayer(new OpenLayers.Layer.Stamen("toner"));
+    	map.addLayer(new OpenLayers.Layer.OSM("OpenCycleMap", ['http://tile.opencyclemap.org/cycle/${z}/${x}/${y}.png']));
 		
 		// var mapbox = new OpenLayers.Layer.XYZ("Natural Earth",
   //           [
@@ -48,12 +52,30 @@
         
         function onFeatureSelect(feature) {
             selectedFeature = feature;
-            var popup_content="<div style='font-size:.8em'><h3>" + feature.attributes.name +"</h3></div>";
-            var popup = new OpenLayers.Popup.FramedCloud("chicken", 
-                                     feature.geometry.getBounds().getCenterLonLat(),
-                                     null,
+            var popup_content="<div style='font-size:.8em; border:1px'><h3>" + feature.attributes.name +"</h3></div>";
+
+            var PopupPos, leftOffset = 45, topOffset = 55, rightOffset=0;
+
+		    var MapExtent = map.getExtent();
+		    var Reso = map.getResolution();
+		    var MapXCenter = map.getExtent().getCenterPixel().x;
+		    var FeatureXPos = feature.geometry.getBounds().getCenterPixel().x;
+		    var bLeft = FeatureXPos >= MapXCenter;
+
+		    if(bLeft){ // popup appears top-left position
+		        PopupPos = new OpenLayers.LonLat(MapExtent.left,MapExtent.top);
+		        PopupPos.lon += leftOffset * Reso;
+		    } else { // popup appears top-right position
+		        PopupPos = new OpenLayers.LonLat(MapExtent.right,MapExtent.top);
+		        PopupPos.lon -= rightOffset * Reso;
+		    }
+		    PopupPos.lat -= topOffset * Reso;
+
+            var popup = new OpenLayers.Popup.Anchored("chicken", 
+                                     PopupPos,
+                                     new OpenLayers.Size(225.225),
                                      popup_content,
-                                     null, true, onPopupClose);
+                                     null, false, onPopupClose);
             feature.popup = popup;
             map.addPopup(popup);
         }
@@ -66,13 +88,13 @@
 		
 		var styleschool = new OpenLayers.Style({
 			pointRadius: "${radius}",
-			// label:"${name}",
+			label:"${name}",
 			label:"${clusterCount}",
 			fillOpacity: 0.7,
 			fillColor:'blue',
 			strokeColor:'blue',
 			fontcolor:'blue',
-			externalGraphic:'school_color_icon.png'
+			// externalGraphic:'school_color_icon.png'
 		},
 		{
 			context:{
@@ -102,7 +124,7 @@
 				new OpenLayers.Strategy.Fixed()
 			],
 			protocol: new OpenLayers.Protocol.HTTP({
-				url: "data/school_centroid.geojson",   //<-- relative or absolute URL to your .osm file
+				url: "data/education_centroid.geojson",   //<-- relative or absolute URL to your .osm file
 				format: new OpenLayers.Format.GeoJSON()
 			}),
 			projection: map.displayProjection,
@@ -159,10 +181,13 @@
 				'default':stylehealth
 			})
 		});
-		map.addLayer(odri_health);	
+		// map.addLayer(odri_health);
+		
+				
 		selectControl = new OpenLayers.Control.SelectFeature(odri_schools,{
 				onSelect: onFeatureSelect, 
-        		onUnselect: onFeatureUnselect
+        		onUnselect: onFeatureUnselect,
+        		hover:true
     		}
     	);
             
