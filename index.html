@@ -1,10 +1,10 @@
 <html>
 <head>
 	<title></title>
-	<script src="http://localhost/OpenLayers-2.12/OpenLayers.light.js" type="text/javascript"></script>
-	<script src="http://localhost/OpenLayers-2.12/addins/stamen-maps.js" type="text/javascript"></script>
-	<!-- // <script src="http://openlayers.org/api/2.12/OpenLayers.light.js" type="text/javascript"></script> -->
-	<!-- // <script type="text/javascript" src="http://maps.stamen.com/js/tile.stamen.js?v1.2.3"></script> -->
+	<!-- // <script src="http://localhost/OpenLayers-2.12/OpenLayers.js" type="text/javascript"></script> -->
+	<!-- // <script src="http://localhost/OpenLayers-2.12/addins/stamen-maps.js" type="text/javascript"></script> -->
+	<script src="http://openlayers.org/api/2.12/OpenLayers.js" type="text/javascript"></script>
+	<script type="text/javascript" src="http://maps.stamen.com/js/tile.stamen.js?v1.2.3"></script>
 	<!--style>
 		html, body, #map {margin: 0; width: *; height: *;}
 	</style-->
@@ -91,20 +91,19 @@
 			label:"${name}",
 			label:"${clusterCount}",
 			fillOpacity: 0.7,
-			fillColor:'blue',
+			fillColor:'yellow',
 			strokeColor:'blue',
+			// strokewidth: 2px;
 			fontcolor:'blue',
-			// externalGraphic:'school_color_icon.png'
+			// externalGraphic:'icon/school_color_icon.png'
 		},
 		{
 			context:{
 				radius: function(feature){
-					if(feature.attributes.count>1){
-						return feature.attributes.count*0.4;
-					}
-					else{
-						return 4;
-					}
+					var rad=map.getZoom()*map.getZoom()*map.getZoom()*map.getZoom()*map.getZoom()*0.00009;
+					// var rad = 4;
+					console.log('calculated radius='+rad);
+					return rad;
 				},
 				clusterCount: function(feature) {
 					if (feature.attributes.count > 10)
