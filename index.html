@@ -88,39 +88,48 @@
 		
 		var styleschool = new OpenLayers.Style({
 			pointRadius: "${radius}",
-			label:"${name}",
-			label:"${clusterCount}",
+			// pointRadius: 6,
+			// label:"${name}",
 			fillOpacity: 0.7,
-			fillColor:'yellow',
+			fillColor:'red',
 			strokeColor:'blue',
-			// strokewidth: 2px;
+			strokeWidth: "${strokeWidth}",
 			fontcolor:'blue',
+			graphicWidth: "${radius}",
+			graphicHeight: "${radius}",
 			// externalGraphic:'icon/school_color_icon.png'
 		},
 		{
 			context:{
 				radius: function(feature){
-					var rad=map.getZoom()*map.getZoom()*map.getZoom()*map.getZoom()*map.getZoom()*0.00009;
-					// var rad = 4;
+					// var rad=map.getZoom()*map.getZoom()*map.getZoom()*map.getZoom()*0.00009;
+					var rad = 1+(9-2)/6*(map.getZoom()-12);
+					// console.log('calculated radius='+rad);
+					return rad;
+				},
+				graphicHeight: function(feature){
+					// var rad=map.getZoom()*map.getZoom()*map.getZoom()*map.getZoom()*0.00009;
+					var rad = 1+(9-2)/6*(map.getZoom()-12);
 					console.log('calculated radius='+rad);
 					return rad;
 				},
-				clusterCount: function(feature) {
-					if (feature.attributes.count > 10)
-					{
-						return feature.attributes.count;
-					}
-					else
-					{
-						return "";
-					}
+				graphicWidth: function(feature){
+					// var rad=map.getZoom()*map.getZoom()*map.getZoom()*map.getZoom()*0.00009;
+					var rad = 1+(9-2)/6*(map.getZoom()-12);
+					// console.log('calculated radius='+rad);
+					return rad;
 				},
+				strokeWidth: function(feature){
+					var rad = (2+(9-2)/6*(map.getZoom()-12))/5;
+					return rad;
+				}
 			}
 		})
 		var odri_schools = new OpenLayers.Layer.Vector('OPENDRI SCHOOLS MAPPING',	
 		{
 			strategies: [
 				new OpenLayers.Strategy.Fixed()
+				// new OpenLayers.Strategy.Cluster()
 			],
 			protocol: new OpenLayers.Protocol.HTTP({
 				url: "data/education_centroid.geojson",   //<-- relative or absolute URL to your .osm file
