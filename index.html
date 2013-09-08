@@ -53,9 +53,7 @@
         function onFeatureSelect(feature) {
             selectedFeature = feature;
             var popup_content="<div style='font-size:.8em; border:1px'><h3>" + feature.attributes.name +"</h3></div>";
-
             var PopupPos, leftOffset = 45, topOffset = 55, rightOffset=0;
-
 		    var MapExtent = map.getExtent();
 		    var Reso = map.getResolution();
 		    var MapXCenter = map.getExtent().getCenterPixel().x;
