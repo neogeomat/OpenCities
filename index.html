@@ -1,9 +1,9 @@
 <html>
 <head>
 	<title></title>
-	<!-- // <script src="http://localhost/OpenLayers-2.12/OpenLayers.js" type="text/javascript"></script> -->
+	<script src="http://localhost/OpenLayers-2.12/OpenLayers.js" type="text/javascript"></script>
 	<!-- // <script src="http://localhost/OpenLayers-2.12/addins/stamen-maps.js" type="text/javascript"></script> -->
-	<script src="http://openlayers.org/api/2.12/OpenLayers.js" type="text/javascript"></script>
+	<!-- //script src="http://openlayers.org/api/2.12/OpenLayers.js" type="text/javascript"></script-->
 	<script type="text/javascript" src="http://maps.stamen.com/js/tile.stamen.js?v1.2.3"></script>
 	<!--style>
 		html, body, #map {margin: 0; width: *; height: *;}
@@ -47,8 +47,14 @@
   //       map.addLayer(mapbox);
         map.setCenter(center.transform(proj4326,proj900913),zoom);
         // map.setCenter(center,zoom);
+       
+
         function onPopupClose(evt) {
-            selectControl.unselect(selectedFeature);
+            feature=evt.feature;
+            selectControl.unselect(feature);
+            feature.popup.destroy();
+            feature.popup = null;
+
         }
         
         function onFeatureSelect(feature) {
@@ -59,25 +65,41 @@
 		    var Reso = map.getResolution();
 		    var MapXCenter = map.getExtent().getCenterPixel().x;
 		    var FeatureXPos = feature.geometry.getBounds().getCenterPixel().x;
-		    var bLeft = FeatureXPos >= MapXCenter;
+		    var bLeft = (FeatureXPos >= MapXCenter);
+		    if (feature.cluster){
+		    	var popup_content_for_cluster="zoom in more to view individual schools there are "+feature.attributes.count+"schools in this cluster";
+		    	var popup1 = new OpenLayers.Popup.FramedCloud("chicken", 
+	                                     PopupPos,
+	                                     new OpenLayers.Size(225.225),
+	                                     popup_content_for_cluster,
+	                                     null, false, onPopupClose);
+	            feature.popup = popup1;
+	            map.addPopup(popup1);
 
-		    if(bLeft){ // popup appears top-left position
-		        PopupPos = new OpenLayers.LonLat(MapExtent.left,MapExtent.top);
-		        PopupPos.lon += leftOffset * Reso;
-		    } else { // popup appears top-right position
-		        PopupPos = new OpenLayers.LonLat(MapExtent.right,MapExtent.top);
-		        PopupPos.lon -= rightOffset * Reso;
 		    }
-		    PopupPos.lat -= topOffset * Reso;
+		    else{
+			    
+			    if(bLeft){ // popup appears top-left position
+			        PopupPos = new OpenLayers.LonLat(MapExtent.left,MapExtent.top);
+			        PopupPos.lon += leftOffset * Reso;
+			    } 
 
-            var popup = new OpenLayers.Popup.Anchored("chicken", 
-                                     PopupPos,
-                                     new OpenLayers.Size(225.225),
-                                     popup_content,
-                                     null, false, onPopupClose);
-            feature.popup = popup;
-            map.addPopup(popup);
-        }
+			    else { // popup appears top-right position
+			        PopupPos = new OpenLayers.LonLat(MapExtent.right,MapExtent.top);
+			        PopupPos.lon -= rightOffset * Reso;
+			    }
+			    
+			    PopupPos.lat -= topOffset * Reso;
+	            
+	            var popup = new OpenLayers.Popup.Anchored("chicken", 
+	                                     PopupPos,
+	                                     new OpenLayers.Size(225.225),
+	                                     popup_content,
+	                                     null, false, onPopupClose);
+	            feature.popup = popup;
+	            map.addPopup(popup);
+        	}
+    		}
         
         function onFeatureUnselect(feature) {
             map.removePopup(feature.popup);
@@ -94,41 +116,67 @@
 			strokeColor:'blue',
 			strokeWidth: "${strokeWidth}",
 			fontcolor:'blue',
-			graphicWidth: "${radius}",
-			graphicHeight: "${radius}",
+			graphicWidth: "${graphicWidth}",
+			graphicHeight: "${graphicHeight}",
 			// externalGraphic:'icon/school_color_icon.png'
 		},
 		{
 			context:{
-				radius: function(feature){
-					// var rad=map.getZoom()*map.getZoom()*map.getZoom()*map.getZoom()*0.00009;
-					var rad = 1+(9-2)/6*(map.getZoom()-12);
-					// console.log('calculated radius='+rad);
-					return rad;
-				},
+				radius: function(feature) {
+                            var pix = 2;
+                            if(feature.cluster) {
+                                pix = Math.min(feature.attributes.count, 7) + 2;
+                            }
+                            return pix;
+                        },
+				// radius: function(feature){
+				// 	// var rad=map.getZoom()*map.getZoom()*map.getZoom()*map.getZoom()*0.00009;
+					
+				// 	if(feature.attributes.count>1){
+				// 		return feature.attributes.count*0.4;
+				// 	}
+				// 	else{
+				// 		return 4;
+				// 	}
+				// 	// var rad = 1+(9-2)/6*(map.getZoom()-12);
+				// 	// // console.log('calculated radius='+rad);
+				// 	// return rad;
+				// },
+				
+
 				graphicHeight: function(feature){
 					// var rad=map.getZoom()*map.getZoom()*map.getZoom()*map.getZoom()*0.00009;
 					var rad = 1+(9-2)/6*(map.getZoom()-12);
 					console.log('calculated radius='+rad);
 					return rad;
 				},
+				
 				graphicWidth: function(feature){
 					// var rad=map.getZoom()*map.getZoom()*map.getZoom()*map.getZoom()*0.00009;
 					var rad = 1+(9-2)/6*(map.getZoom()-12);
 					// console.log('calculated radius='+rad);
 					return rad;
 				},
+				
+				// strokewidth: function(feature) {
+    //                         return (feature.cluster) ? 2 : 1;
+    //              },
+
+
 				strokeWidth: function(feature){
 					var rad = (2+(9-2)/6*(map.getZoom()-12))/5;
 					return rad;
 				}
 			}
-		})
-		var odri_schools = new OpenLayers.Layer.Vector('OPENDRI SCHOOLS MAPPING',	
+		});
+		// var strategy = new OpenLayers.Strategy.Cluster({distance: 15, threshold: 5});
+		var odri_schools = new OpenLayers.Layer.Vector('OPENDRI MAPPED SCHOOLS ',	
 		{
 			strategies: [
-				new OpenLayers.Strategy.Fixed()
-				// new OpenLayers.Strategy.Cluster()
+				//strategy
+				new OpenLayers.Strategy.Fixed(),
+				new OpenLayers.Strategy.Cluster({distance: 50, threshold: 5})//for clusturing strategy.
+
 			],
 			protocol: new OpenLayers.Protocol.HTTP({
 				url: "data/education_centroid.geojson",   //<-- relative or absolute URL to your .osm file
