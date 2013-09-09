@@ -30,24 +30,24 @@
 		map.addLayer(new OpenLayers.Layer.Stamen("toner"));
     	map.addLayer(new OpenLayers.Layer.OSM("OpenCycleMap", ['http://tile.opencyclemap.org/cycle/${z}/${x}/${y}.png']));
 		
-		// var mapbox = new OpenLayers.Layer.XYZ("Natural Earth",
-  //           [
-  //               "http://a.tiles.mapbox.com/v3/amritkarma.map-6c5zckhu/${z}/${x}/${y}.png",
-  //               "http://b.tiles.mapbox.com/v3/amritkarma.map-6c5zckhu/${z}/${x}/${y}.png",
-  //               "http://c.tiles.mapbox.com/v3/amritkarma.map-6c5zckhu/${z}/${x}/${y}.png",
-  //               "http://d.tiles.mapbox.com/v3/amritkarma.map-6c5zckhu/${z}/${x}/${y}.png"
-  //           ], {
-  //               attribution: "Tiles &copy; <a href='http://mapbox.com/'>MapBox</a>",
-  //               sphericalMercator: true,
-  //               wrapDateLine: false,
-  //               // numZoomLevels: 5,
-  //               isBaseLayer:true
-  //           }
-  //       );
-  //       map.addLayer(mapbox);
+		var mapbox = new OpenLayers.Layer.XYZ("Natural Earth",
+            [
+                "http://a.tiles.mapbox.com/v3/amritkarma.map-6c5zckhu/${z}/${x}/${y}.png",
+                "http://b.tiles.mapbox.com/v3/amritkarma.map-6c5zckhu/${z}/${x}/${y}.png",
+                "http://c.tiles.mapbox.com/v3/amritkarma.map-6c5zckhu/${z}/${x}/${y}.png",
+                "http://d.tiles.mapbox.com/v3/amritkarma.map-6c5zckhu/${z}/${x}/${y}.png"
+            ], {
+                attribution: "Tiles &copy; <a href='http://mapbox.com/'>MapBox</a>",
+                sphericalMercator: true,
+                wrapDateLine: false,
+                // numZoomLevels: 5,
+                isBaseLayer:true
+            }
+        );
+        map.addLayer(mapbox);
         map.setCenter(center.transform(proj4326,proj900913),zoom);
         // map.setCenter(center,zoom);
-       
+       	
 
         function onPopupClose(evt) {
             feature=evt.feature;
@@ -67,6 +67,10 @@
 		    var bLeft = (FeatureXPos >= MapXCenter);
 		    if (feature.cluster){
 		    	var popup_content_for_cluster="There are "+feature.attributes.count+" schools in this cluster Please zoom in to view individual schools ";
+			    	var i = 0;
+			    	while (i < min(feature.attributes.count,10)){
+			    		popup_content_for_cluster += (feature.cluster[i].attributes.name+"<br>");
+			    	}
 
 		    	
 		    	if (bLeft){
@@ -74,22 +78,25 @@
 		    		PopupPos1.lon +=  leftOffset * Reso;
 
 		    	}
-		    	else{
+		    
+			    else{
 		    		var PopupPos1 = new OpenLayers.LonLat(MapExtent.right,MapExtent.top);
 		    		PopupPos1.lon -= rightOffset * Reso
-		    	}
+			    }
 		    	PopupPos1.lat -= topOffset * Reso;
 		    	var popup = new OpenLayers.Popup.Anchored("chicken", 
 	                                     PopupPos1,
 	                                     new OpenLayers.Size(225.225),
 	                                     popup_content_for_cluster,
-	                                     null, false, onPopupClose);
+	                                     null, false, onPopupClose
+	                                     );
+		    	popup.setBackgroundColor('#ff0000');
 	            feature.popup = popup;
 	            map.addPopup(popup);
 
 		    }
 		    else{
-			    var popup_content="<div style='font-size:.8em; border:1px; bgcolour:red'><h3>" + feature.attributes.name +"</h3></div>";
+			    var popup_content="<div style='font-size:.8em; border:1px><h3>" + feature.attributes.name +"</h3></div>";
 			    if(bLeft){ // popup appears top-left position
 			        PopupPos = new OpenLayers.LonLat(MapExtent.left,MapExtent.top);
 			        PopupPos.lon += leftOffset * Reso;
@@ -107,6 +114,7 @@
 	                                     new OpenLayers.Size(225.225),
 	                                     popup_content,
 	                                     null, false, onPopupClose);
+	            popup.setBackgroundColor('#ff0000');
 	            feature.popup = popup;
 	            map.addPopup(popup);
         	}
@@ -159,7 +167,7 @@
 
 				graphicHeight: function(feature){
 					// var rad=map.getZoom()*map.getZoom()*map.getZoom()*map.getZoom()*0.00009;
-					return(feature.cluster)? (feature.attributes.count*0.5) : (1+(9-2)/6*(map.getZoom()*2-12))
+					return(feature.cluster)? (feature.attributes.count*0.2) : (1+(9-2)/6*(map.getZoom()*1.75-12))
 
 					// var rad = 1+(9-2)/6*(map.getZoom()-12);
 					// console.log('calculated radius='+rad);
@@ -168,7 +176,7 @@
 				
 				graphicWidth: function(feature){
 					// var rad=map.getZoom()*map.getZoom()*map.getZoom()*map.getZoom()*0.00009;
-					return(feature.cluster)? (feature.attributes.count*0.5) : (1+(9-2)/6*(map.getZoom()*2-12))
+					return(feature.cluster)? (feature.attributes.count*0.2) : (1+(9-2)/6*(map.getZoom()*1.75-12))
 					// var rad = 1+(9-2)/6*(map.getZoom()-12);
 					// // console.log('calculated radius='+rad);
 					// return rad;
@@ -290,7 +298,7 @@
     	});
 		map.addControl(selector);*/
 	
-
+		map.setBaseLayer(mapbox);
 	</script>
 </body>
 </html>
