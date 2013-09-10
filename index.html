@@ -85,7 +85,7 @@
 		    var FeatureXPos = feature.geometry.getBounds().getCenterPixel().x;
 		    var bLeft = (FeatureXPos >= MapXCenter);
 		    if (feature.cluster){
-		    	var popup_content_for_cluster="There are "+feature.attributes.count+" schools in this cluster <ol>";
+		    	var popup_content_for_cluster="There are "+feature.attributes.count+" schools in this cluster <ul>";
 		    	var i=0;
 		    	while(i<10){
 		    		if(i<feature.attributes.count){
@@ -94,7 +94,7 @@
 		    		i++;
 		    	}
 		    	if(feature.attributes.count>10){
-		    		popup_content_for_cluster+="</ol>and more...."
+		    		popup_content_for_cluster+="</ul> and more...."
 		    	}
 		    	if (bLeft){
 		    		var PopupPos1 = new OpenLayers.LonLat(MapExtent.left,MapExtent.top);
@@ -117,7 +117,8 @@
 	            popup1.draw();
 		    }
 		    else{
-			    var popup_content="<div style='font-size:.8em; border:1px'><h3>" + feature.attributes.name +"</h3></div>";
+			    var popup_content="<div style='font-size:.8em; border:1px'><h3>" + feature.attributes.name ;
+			    popup_content += "</br>" + feature.attributes.operator_t + "</br>"+feature.attributes.isced_leve+"</h3></div>"
 			    if(bLeft){ // popup appears top-left position
 			        PopupPos = new OpenLayers.LonLat(MapExtent.left,MapExtent.top);
 			        PopupPos.lon += leftOffset * Reso;
