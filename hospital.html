@@ -66,8 +66,8 @@
 	    }
 	    
 	    else{
-		    var popup_content="<div style='font-size:.8em; border:1px><h3>" + feature.attributes.name +"</h3></div>";
-		    	popup_content+="</br>" + "<div style='font-size:.8em; border:1px><h3>" + feature.attributes.amenity +"</h3></div>";
+		    var popup_content="<div style='font-size:.8em; border:1px; '><h3>" + feature.attributes.name ;
+		    	popup_content+="</br>" + feature.attributes.amenity+"</br>"+feature.attributes.operator_t+"</h3></div>";
 		    if(bLeft){ // popup appears top-left position
 		        PopupPos = new OpenLayers.LonLat(MapExtent.left,MapExtent.top);
 		        PopupPos.lon += leftOffset * Reso;
@@ -84,7 +84,9 @@
                                      PopupPos,
                                      new OpenLayers.Size(225.225),
                                      popup_content,
-                                     null, false, onPopupClose);
+                                     null, false, onPopupClose
+                                     );
+            popup.rounded=true;
             // popup.setBackgroundColor('#ff0000');
             feature.popup = popup;
             map.addPopup(popup);
@@ -152,7 +154,7 @@
 	        },
 	        graphicHeight: function(feature){
 				// var rad=map.getZoom()*map.getZoom()*map.getZoom()*map.getZoom()*0.00009;
-				return(feature.cluster)? (feature.attributes.count*0.2) : (1+(9-2)/6*(map.getZoom()*1.75-12))
+				return(feature.cluster)? (feature.attributes.count*2) : (1+(9-2)/6*(map.getZoom()*1.75-12))
 
 				// var rad = 1+(9-2)/6*(map.getZoom()-12);
 				// console.log('calculated radius='+rad);
@@ -161,7 +163,7 @@
 				
 			graphicWidth: function(feature){
 				
-				return(feature.cluster)? (feature.attributes.count*0.2) : (1+(9-2)/6*(map.getZoom()*1.75-12))
+				return(feature.cluster)? (feature.attributes.count*2) : (1+(9-2)/6*(map.getZoom()*1.75-12))
 			
 			},
 
