@@ -67,10 +67,10 @@
 		    var bLeft = (FeatureXPos >= MapXCenter);
 		    if (feature.cluster){
 		    	var popup_content_for_cluster="There are "+feature.attributes.count+" schools in this cluster Please zoom in to view individual schools ";
-			    	var i = 0;
-			    	while (i < min(feature.attributes.count,10)){
-			    		popup_content_for_cluster += (feature.cluster[i].attributes.name+"<br>");
-			    	}
+			    	// var i = 0;
+			    	// while (i < min(feature.attributes.count,10)){
+			    	// 	popup_content_for_cluster += (feature.cluster[i].attributes.name+"<br>");
+			    	//}
 
 		    	
 		    	if (bLeft){
@@ -90,7 +90,7 @@
 	                                     popup_content_for_cluster,
 	                                     null, false, onPopupClose
 	                                     );
-		    	popup.setBackgroundColor('#ff0000');
+		    	// popup.setBackgroundColor('#ff0000');
 	            feature.popup = popup;
 	            map.addPopup(popup);
 
@@ -114,7 +114,7 @@
 	                                     new OpenLayers.Size(225.225),
 	                                     popup_content,
 	                                     null, false, onPopupClose);
-	            popup.setBackgroundColor('#ff0000');
+	            // popup.setBackgroundColor('#ff0000');
 	            feature.popup = popup;
 	            map.addPopup(popup);
         	}
