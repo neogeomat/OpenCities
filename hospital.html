@@ -34,17 +34,21 @@
 	    var FeatureXPos = feature.geometry.getBounds().getCenterPixel().x;
 	    var bLeft = (FeatureXPos >= MapXCenter);
 	    if (feature.cluster){
-	    	var popup_content_for_cluster="There are "+feature.attributes.count+" hospitals in this cluster Please zoom in to view individual health facilities ";
-		    	// var i = 0;
-		    	// while (i < min(feature.attributes.count,10)){
-		    	// 	popup_content_for_cluster += (feature.cluster[i].attributes.name+"<br>");
-		    	//}
-
+	    	var popup_content_for_cluster="There are "+feature.attributes.count+" schools in this cluster <ul>";
+	    	var i=0;
+	    	while(i<10){
+	    		if(i<feature.attributes.count){
+	    			popup_content_for_cluster+="<li>"+feature.cluster[i].attributes.name+"</li>";
+	    		}
+	    		i++;
+	    	}
+	    	if(feature.attributes.count>10){
+	    		popup_content_for_cluster+="</ul> and more...."
+	    	}
 	    	
 	    	if (bLeft){
 	    		var PopupPos1 = new OpenLayers.LonLat(map.getExtent().left,map.getExtent().top);
 	    		PopupPos1.lon +=  leftOffset * Reso;
-
 	    	}
 	    
 		    else{
@@ -81,15 +85,16 @@
 		    PopupPos.lat -= topOffset * Reso;
             
             var popup = new OpenLayers.Popup.Anchored("chicken", 
-                                     PopupPos,
-                                     new OpenLayers.Size(225.225),
-                                     popup_content,
-                                     null, false, onPopupClose
-                                     );
-            popup.rounded=true;
-            // popup.setBackgroundColor('#ff0000');
+                PopupPos,
+                new OpenLayers.Size(225.225),
+                popup_content,
+                null, false, onPopupClose
+                );
             feature.popup = popup;
             map.addPopup(popup);
+            popup.backgroundColor="light blue";
+            popup.div.style.borderRadius="15px";
+            popup.draw();
     	}
 	}
     
@@ -153,23 +158,16 @@
 	            return pix;
 	        },
 	        graphicHeight: function(feature){
-				// var rad=map.getZoom()*map.getZoom()*map.getZoom()*map.getZoom()*0.00009;
 				return(feature.cluster)? (feature.attributes.count*2) : (1+(9-2)/6*(map.getZoom()*1.75-12))
-
-				// var rad = 1+(9-2)/6*(map.getZoom()-12);
-				// console.log('calculated radius='+rad);
-				// return rad;
 			},
 				
 			graphicWidth: function(feature){
-				
 				return(feature.cluster)? (feature.attributes.count*2) : (1+(9-2)/6*(map.getZoom()*1.75-12))
 			
 			},
 
 
 			strokeWidth: function(feature){
-				
 				var rad = (2+(9-2)/6*(map.getZoom()-12))/5;
 				return rad;
 			
@@ -177,10 +175,10 @@
 				
 			symbol: function(feature){
 				if (feature.cluster){
-					return 'icon/Cluster_icon.png';//instead return another symbol for 
+					return 'icon/add.png';//instead return another symbol for 
 				}
 				else{
-					return 'icon/health_icon.png';
+					return 'icon/hospital-24@2x.png';
 				}
 			}
 		}

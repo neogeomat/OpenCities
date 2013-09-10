@@ -183,38 +183,59 @@
 		});
 		
 		//styling for health facilities
-		var stylehealth = new OpenLayers.Style({
+		var health_style = new OpenLayers.Style({
 			pointRadius: "${radius}",
-			label:"${name}",
-			label:"${clusterCount}",
 			fillOpacity: 0.7,
 			fillColor:'red',
-			strokeColor:'red',
-			fontcolor:'red',
-			//externalGraphic:'hospital_color_icon.png'
+			strokeColor:'blue',
+			strokeWidth: "${strokeWidth}",
+			fontcolor:'blue',
+			graphicWidth: "${graphicWidth}",
+			graphicHeight: "${graphicHeight}",
+			externalGraphic:"${symbol}"//'icon/school_color_icon.png'
 		},
 		{
 			context:{
-				radius: function(feature){
-					if(feature.attributes.count>1){
-						return feature.attributes.count*0.4;
+				radius: function(feature) {
+		            var pix = 2;
+		            if(feature.cluster) {
+		                pix = Math.min(feature.attributes.count, 7) + 2;
+		            }
+		            return pix;
+		        },
+		        graphicHeight: function(feature){
+					// var rad=map.getZoom()*map.getZoom()*map.getZoom()*map.getZoom()*0.00009;
+					return(feature.cluster)? (feature.attributes.count*2) : (1+(9-2)/6*(map.getZoom()*1.75-12))
+
+					// var rad = 1+(9-2)/6*(map.getZoom()-12);
+					// console.log('calculated radius='+rad);
+					// return rad;
+				},
+					
+				graphicWidth: function(feature){
+					
+					return(feature.cluster)? (feature.attributes.count*2) : (1+(9-2)/6*(map.getZoom()*1.75-12))
+				
+				},
+
+
+				strokeWidth: function(feature){
+					
+					var rad = (2+(9-2)/6*(map.getZoom()-12))/5;
+					return rad;
+				
+				},
+					
+				symbol: function(feature){
+					if (feature.cluster){
+						return 'icon/add.png';//instead return another symbol for 
 					}
 					else{
-						return 4;
+						return 'icon/health_icon.jpg';
 					}
-				},
-				clusterCount: function(feature) {
-					if (feature.attributes.count > 10)
-					{
-						return feature.attributes.count*5;
-					}
-					else
-					{
-						return "";
-					}
-				},
+				}
 			}
-		})
+		});
 
 		//layers
 		var odri_schools = new OpenLayers.Layer.Vector('OPENDRI MAPPED SCHOOLS ',{
@@ -222,7 +243,6 @@
 				//strategy
 				new OpenLayers.Strategy.Fixed(),
 				new OpenLayers.Strategy.Cluster({distance: 15, threshold: 2})//for clusturing strategy.
-
 			],
 			protocol: new OpenLayers.Protocol.HTTP({
 				url: "data/education_centroid.geojson",   //<-- relative or absolute URL to your .osm file
@@ -236,15 +256,16 @@
 
 		//health facilitites variable
 		var odri_health = new OpenLayers.Layer.Vector('OPENDRI HEALTH MAPPING',{
-			strategies: [new OpenLayers.Strategy.Fixed()
-				],
+			strategies: [new OpenLayers.Strategy.Fixed(),
+				new OpenLayers.Strategy.Cluster({distance: 15, threshold: 2})//for clusturing strategy.
+			],
 			protocol: new OpenLayers.Protocol.HTTP({
-				url: "data/health.geojson",   //<-- relative or absolute URL to your .osm file
+				url: "data/health_centroid.geojson",   //<-- relative or absolute URL to your .osm file
 				format: new OpenLayers.Format.GeoJSON()
 			}),
 			projection: map.displayProjection,
 			styleMap: new OpenLayers.StyleMap({
-				'default':stylehealth
+				'default':health_style
 			})
 		});
 		// map.addLayer(odri_health);
