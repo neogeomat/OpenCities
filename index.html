@@ -5,9 +5,12 @@
 	<!-- // <script src="http://localhost/OpenLayers-2.12/addins/stamen-maps.js" type="text/javascript"></script> -->
 	<script src="http://openlayers.org/api/2.12/OpenLayers.js" type="text/javascript"></script>
 	<script type="text/javascript" src="http://maps.stamen.com/js/tile.stamen.js?v1.2.3"></script>
-	<!--style>
-		html, body, #map {margin: 0; width: *; height: *;}
-	</style-->
+	<style>
+		.olPopup{
+			border-radius: "15px";
+			border-color: "green";
+		}
+	</style>
 </head>
 <body>
 	<div id='map'></div>
@@ -16,9 +19,9 @@
 		var proj4326 = new OpenLayers.Projection("EPSG:4326");
 		var proj900913 = new OpenLayers.Projection("EPSG:900913");
 		var centerX = 85.33141;//491213.721224323//-123.1684986291807;//9497800;
-		var centerY = 27.72223;//5456645.24607268//49.245339757767844;//3212000;
+		var centerY = 27.7;//5456645.24607268//49.245339757767844;//3212000;
 		var center = new OpenLayers.LonLat(centerX, centerY);
-		var zoom = 12;
+		var zoom = 11;
 		var map = new OpenLayers.Map('map',{
 			projection:proj4326
 		});
@@ -71,12 +74,10 @@
             selectControl.unselect(feature);
             feature.popup.destroy();
             feature.popup = null;
-
         }
         
         function onFeatureSelect(feature) {
             selectedFeature = feature;
-            
             var PopupPos, leftOffset = 45, topOffset = 55, rightOffset=0;
 		    var MapExtent = map.getExtent();
 		    var Reso = map.getResolution();
@@ -111,7 +112,9 @@
 	                                     null, false, onPopupClose);
 	            feature.popup = popup1;
 	            map.addPopup(popup1);
-
+	            popup1.backgroundColor="light blue";
+	            popup1.div.style.borderRadius="15px";
+	            popup1.draw();
 		    }
 		    else{
 			    var popup_content="<div style='font-size:.8em; border:1px'><h3>" + feature.attributes.name +"</h3></div>";
@@ -134,6 +137,9 @@
 	                                     null, false, onPopupClose);
 	            feature.popup = popup;
 	            map.addPopup(popup);
+	            popup.backgroundColor="light blue";
+	            popup.div.style.borderRadius="15px";
+	            popup.draw();
         	}
     	}
         
@@ -145,42 +151,19 @@
         }
 		
 		var styleschool = new OpenLayers.Style({
-			pointRadius: "${radius}",
-			// pointRadius: 6,
 			// label:"${name}",
-			fillOpacity: 0.7,
-			fillColor:'red',
-			strokeColor:'blue',
-			strokeWidth: "${strokeWidth}",
-			fontcolor:'blue',
 			graphicWidth: "${graphicWidth}",
 			graphicHeight: "${graphicHeight}",
 			externalGraphic: "${symbol}"
 		},
 		{
 			context:{
-				radius: function(feature) {
-                    var pix = 2;
-                    if(feature.cluster) {
-                        pix = Math.min(feature.attributes.count, 7) + 2;
-                    }
-                    return pix;
-                },				
-
 				graphicHeight: function(feature){
-					// var rad=map.getZoom()*map.getZoom()*map.getZoom()*map.getZoom()*0.00009;
-					return(feature.cluster)? (feature.attributes.count*0.2) : (1+(9-2)/6*(map.getZoom()*1.75-12));
-				//	var rad = 1+(9-2)/6*(map.getZoom()-12);
-				// console.log('calculated radius='+rad);
-				//	return rad;
+					return(feature.cluster)? (1+feature.attributes.count*.5) : (1+(19-2)/6*(map.getZoom()*1.75-12));
 				},
 				
 				graphicWidth: function(feature){
-					// var rad=map.getZoom()*map.getZoom()*map.getZoom()*map.getZoom()*0.00009;
-					return(feature.cluster)? (feature.attributes.count*0.2) : (1+(9-2)/6*(map.getZoom()*1.75-12));
-					//var rad = 1+(9-2)/6*(map.getZoom()-12);
-					// console.log('calculated radius='+rad);
-					//return rad;
+					return(feature.cluster)? (1+feature.attributes.count*.5) : (1+(19-2)/6*(map.getZoom()*1.75-12));
 				},
 
 				strokeWidth: function(feature){
@@ -189,33 +172,14 @@
 				},
 				symbol: function(feature){
 					if (feature.cluster){
-						return 'icon/Cluster_icon.png';//instead return another symbol for 
+						return 'icon/accept.png';//instead return another symbol for 
 					}
 					else{
-						return 'icon/school_color_icon.png';
+						return 'icon/school-24@2x.png';
 					}
 				}
 			}
 		});
-		// var strategy = new OpenLayers.Strategy.Cluster({distance: 15, threshold: 5});
-		var odri_schools = new OpenLayers.Layer.Vector('OPENDRI MAPPED SCHOOLS ',	
-		{
-			strategies: [
-				//strategy
-				new OpenLayers.Strategy.Fixed(),
-				new OpenLayers.Strategy.Cluster({distance: 50, threshold: 5})//for clusturing strategy.
-
-			],
-			protocol: new OpenLayers.Protocol.HTTP({
-				url: "data/education_centroid.geojson",   //<-- relative or absolute URL to your .osm file
-				format: new OpenLayers.Format.GeoJSON()
-			}),
-			projection: map.displayProjection,
-			styleMap: new OpenLayers.StyleMap({'default':styleschool})
-		}
-		);
-		map.addLayer(odri_schools);
-
 		
 		//styling for health facilities
 		var stylehealth = new OpenLayers.Style({
@@ -251,6 +215,24 @@
 			}
 		})
 
+		//layers
+		var odri_schools = new OpenLayers.Layer.Vector('OPENDRI MAPPED SCHOOLS ',{
+			strategies: [
+				//strategy
+				new OpenLayers.Strategy.Fixed(),
+				new OpenLayers.Strategy.Cluster({distance: 15, threshold: 2})//for clusturing strategy.
+
+			],
+			protocol: new OpenLayers.Protocol.HTTP({
+				url: "data/education_centroid.geojson",   //<-- relative or absolute URL to your .osm file
+				format: new OpenLayers.Format.GeoJSON()
+			}),
+			projection: map.displayProjection,
+			styleMap: new OpenLayers.StyleMap({'default':styleschool})
+		}
+		);
+		map.addLayer(odri_schools);
+
 		//health facilitites variable
 		var odri_health = new OpenLayers.Layer.Vector('OPENDRI HEALTH MAPPING',{
 			strategies: [new OpenLayers.Strategy.Fixed()
@@ -266,7 +248,18 @@
 		});
 		// map.addLayer(odri_health);
 		
+		var kv_basin = new OpenLayers.Layer.Vector('kv_basin',{
+			strategies: [new OpenLayers.Strategy.Fixed()
+				],
+			protocol: new OpenLayers.Protocol.HTTP({
+				url: "data/kv_basin.geojson",   //<-- relative or absolute URL to your .osm file
+				format: new OpenLayers.Format.GeoJSON()
+			}),
+			projection: map.displayProjection
+		});
+		map.addLayer(kv_basin);
 				
+		//controls
 		selectControl = new OpenLayers.Control.SelectFeature(odri_schools,{
 				onSelect: onFeatureSelect, 
         		onUnselect: onFeatureUnselect,
