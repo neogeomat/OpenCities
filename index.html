@@ -46,21 +46,22 @@
         map.addLayer(baseOSM);
         map.addLayer(baseAerial);
 		
-		// var mapbox = new OpenLayers.Layer.XYZ("Natural Earth",
-  //           [
-  //               "http://a.tiles.mapbox.com/v3/amritkarma.map-6c5zckhu/${z}/${x}/${y}.png",
-  //               "http://b.tiles.mapbox.com/v3/amritkarma.map-6c5zckhu/${z}/${x}/${y}.png",
-  //               "http://c.tiles.mapbox.com/v3/amritkarma.map-6c5zckhu/${z}/${x}/${y}.png",
-  //               "http://d.tiles.mapbox.com/v3/amritkarma.map-6c5zckhu/${z}/${x}/${y}.png"
-  //           ], {
-  //               attribution: "Tiles &copy; <a href='http://mapbox.com/'>MapBox</a>",
-  //               sphericalMercator: true,
-  //               wrapDateLine: false,
-  //               // numZoomLevels: 5,
-  //               isBaseLayer:true
-  //           }
-  //       );
-  //       map.addLayer(mapbox);
+		var mapbox = new OpenLayers.Layer.XYZ("MapBox",
+            [
+                "http://a.tiles.mapbox.com/v3/amritkarma.map-6c5zckhu/${z}/${x}/${y}.png",
+                "http://b.tiles.mapbox.com/v3/amritkarma.map-6c5zckhu/${z}/${x}/${y}.png",
+                "http://c.tiles.mapbox.com/v3/amritkarma.map-6c5zckhu/${z}/${x}/${y}.png",
+                "http://d.tiles.mapbox.com/v3/amritkarma.map-6c5zckhu/${z}/${x}/${y}.png"
+            ], {
+                attribution: "Tiles &copy; <a href='http://mapbox.com/'>MapBox</a>",
+                sphericalMercator: true,
+                wrapDateLine: false,
+                // numZoomLevels: 5,
+                isBaseLayer:true
+            }
+        );
+        map.addLayer(mapbox);
+        map.setBaseLayer(mapbox);
         map.setCenter(center.transform(proj4326,proj900913),zoom);
         // map.setCenter(center,zoom);
        
