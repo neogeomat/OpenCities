@@ -8,16 +8,17 @@
 	<!--style>
 		html, body, #map {margin: 0; width: *; height: *;}
 	</style-->
-	<!-- 	<style>
-	#map{
-		height='100%',
-		width='100%'
-	}
-	</style> -->
+	<style>
+		#map{
+			height='100%',
+			width='100%'
+		}
+	</style>
 </head>
 <body>
+   <div id ="map"></div>
    <script type="text/javascript"> 
-    function onpopupclose(evt){
+    function onPopupClose(evt){
     	feature=evt.feature;
         selectControl.unselect(feature);
         feature.popup.destroy();
@@ -33,7 +34,7 @@
 	    var FeatureXPos = feature.geometry.getBounds().getCenterPixel().x;
 	    var bLeft = (FeatureXPos >= MapXCenter);
 	    if (feature.cluster){
-	    	var popup_content_for_cluster="There are "+feature.attributes.count+" hospitals in this cluster Please zoom in to view individual schools ";
+	    	var popup_content_for_cluster="There are "+feature.attributes.count+" hospitals in this cluster Please zoom in to view individual health facilities ";
 		    	// var i = 0;
 		    	// while (i < min(feature.attributes.count,10)){
 		    	// 	popup_content_for_cluster += (feature.cluster[i].attributes.name+"<br>");
@@ -103,7 +104,7 @@
 	var xcenter = 85.33141;
 	var ycenter = 27.72223;
 	var center = new OpenLayers.LonLat(xcenter,ycenter);
-	var zoom = 13
+	var zoom = 12
 	var map = new OpenLayers.Map('map',{
 			projection:proj4326
 	});
@@ -225,9 +226,7 @@
 	map.addControl(controller);
 	controller.activate();
 	map.setBaseLayer(mapbox);
-	</script>
-
-<!-- <div id ="map"></div> -->
+	</script> 
 
 </body>
 </html>
