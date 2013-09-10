@@ -46,21 +46,22 @@
         map.addLayer(baseOSM);
         map.addLayer(baseAerial);
 		
-		// var mapbox = new OpenLayers.Layer.XYZ("Natural Earth",
-  //           [
-  //               "http://a.tiles.mapbox.com/v3/amritkarma.map-6c5zckhu/${z}/${x}/${y}.png",
-  //               "http://b.tiles.mapbox.com/v3/amritkarma.map-6c5zckhu/${z}/${x}/${y}.png",
-  //               "http://c.tiles.mapbox.com/v3/amritkarma.map-6c5zckhu/${z}/${x}/${y}.png",
-  //               "http://d.tiles.mapbox.com/v3/amritkarma.map-6c5zckhu/${z}/${x}/${y}.png"
-  //           ], {
-  //               attribution: "Tiles &copy; <a href='http://mapbox.com/'>MapBox</a>",
-  //               sphericalMercator: true,
-  //               wrapDateLine: false,
-  //               // numZoomLevels: 5,
-  //               isBaseLayer:true
-  //           }
-  //       );
-  //       map.addLayer(mapbox);
+		var mapbox = new OpenLayers.Layer.XYZ("MapBox",
+            [
+                "http://a.tiles.mapbox.com/v3/amritkarma.map-6c5zckhu/${z}/${x}/${y}.png",
+                "http://b.tiles.mapbox.com/v3/amritkarma.map-6c5zckhu/${z}/${x}/${y}.png",
+                "http://c.tiles.mapbox.com/v3/amritkarma.map-6c5zckhu/${z}/${x}/${y}.png",
+                "http://d.tiles.mapbox.com/v3/amritkarma.map-6c5zckhu/${z}/${x}/${y}.png"
+            ], {
+                attribution: "Tiles &copy; <a href='http://mapbox.com/'>MapBox</a>",
+                sphericalMercator: true,
+                wrapDateLine: false,
+                // numZoomLevels: 5,
+                isBaseLayer:true
+            }
+        );
+        map.addLayer(mapbox);
+        map.setBaseLayer(mapbox);
         map.setCenter(center.transform(proj4326,proj900913),zoom);
         // map.setCenter(center,zoom);
        
@@ -138,6 +139,7 @@
         
         function onFeatureUnselect(feature) {
             map.removePopup(feature.popup);
+			selectControl.unselect();
             feature.popup.destroy();
             feature.popup = null;
         }
@@ -153,49 +155,45 @@
 			fontcolor:'blue',
 			graphicWidth: "${graphicWidth}",
 			graphicHeight: "${graphicHeight}",
-			// externalGraphic:'icon/school_color_icon.png'
+			externalGraphic: "${symbol}"
 		},
 		{
 			context:{
 				radius: function(feature) {
-                            var pix = 2;
-                            if(feature.cluster) {
-                                pix = Math.min(feature.attributes.count, 7) + 2;
-                            }
-                            return pix;
-                        },
-				// radius: function(feature){
-				// var rad=map.getZoom()*map.getZoom()*map.getZoom()*map.getZoom()*0.00009;
-					
-				// 	if(feature.attributes.count>1){
-				// 		return feature.attributes.count*0.4;
-				// 	}
-				// 	else{
-				// 		return 4;
-				// 	}
-				// var rad = 1+(9-2)/6*(map.getZoom()-12);
-				// console.log('calculated radius='+rad);
-				// return rad;
-				// },
-				
+                    var pix = 2;
+                    if(feature.cluster) {
+                        pix = Math.min(feature.attributes.count, 7) + 2;
+                    }
+                    return pix;
+                },				
 
 				graphicHeight: function(feature){
 					// var rad=map.getZoom()*map.getZoom()*map.getZoom()*map.getZoom()*0.00009;
-					var rad = 1+(9-2)/6*(map.getZoom()-12);
+					return(feature.cluster)? (feature.attributes.count*0.2) : (1+(9-2)/6*(map.getZoom()*1.75-12));
+				//	var rad = 1+(9-2)/6*(map.getZoom()-12);
 				// console.log('calculated radius='+rad);
-					return rad;
+				//	return rad;
 				},
 				
 				graphicWidth: function(feature){
 					// var rad=map.getZoom()*map.getZoom()*map.getZoom()*map.getZoom()*0.00009;
-					var rad = 1+(9-2)/6*(map.getZoom()-12);
+					return(feature.cluster)? (feature.attributes.count*0.2) : (1+(9-2)/6*(map.getZoom()*1.75-12));
+					//var rad = 1+(9-2)/6*(map.getZoom()-12);
 					// console.log('calculated radius='+rad);
-					return rad;
+					//return rad;
 				},
 
 				strokeWidth: function(feature){
 					var rad = (2+(9-2)/6*(map.getZoom()-12))/5;
 					return rad;
+				},
+				symbol: function(feature){
+					if (feature.cluster){
+						return 'icon/Cluster_icon.png';//instead return another symbol for 
+					}
+					else{
+						return 'icon/school_color_icon.png';
+					}
 				}
 			}
 		});
