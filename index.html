@@ -165,11 +165,11 @@
 					return(feature.cluster)?(feature.attributes.count):"";
 				},
 				graphicHeight: function(feature){
-					return(feature.cluster)? (10+feature.attributes.count*.2) : (1+(14-2)/6*(map.getZoom()*1.75-12));
+					return(feature.cluster)? (15+feature.attributes.count*.2) : 200/map.getZoom();
 				},
 				
 				graphicWidth: function(feature){
-					return(feature.cluster)? (10+feature.attributes.count*.2) : (1+(14-2)/6*(map.getZoom()*1.75-12));
+					return(feature.cluster)? (15+feature.attributes.count*.2) : 200/map.getZoom();
 				},
 
 				strokeWidth: function(feature){
