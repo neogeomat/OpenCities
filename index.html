@@ -155,16 +155,21 @@
 			// label:"${name}",
 			graphicWidth: "${graphicWidth}",
 			graphicHeight: "${graphicHeight}",
+			// graphicWidth: 10px,
+			// graphicHeight: 10px,
 			externalGraphic: "${symbol}"
 		},
 		{
 			context:{
+				name: function(feature){
+					return(feature.cluster)?(feature.attributes.count):"";
+				},
 				graphicHeight: function(feature){
-					return(feature.cluster)? (1+feature.attributes.count*.5) : (1+(19-2)/6*(map.getZoom()*1.75-12));
+					return(feature.cluster)? (10+feature.attributes.count*.2) : (1+(14-2)/6*(map.getZoom()*1.75-12));
 				},
 				
 				graphicWidth: function(feature){
-					return(feature.cluster)? (1+feature.attributes.count*.5) : (1+(19-2)/6*(map.getZoom()*1.75-12));
+					return(feature.cluster)? (10+feature.attributes.count*.2) : (1+(14-2)/6*(map.getZoom()*1.75-12));
 				},
 
 				strokeWidth: function(feature){
@@ -309,5 +314,9 @@
 	
 
 	</script>
+	<div style="position:absolute; top:20px; left:50px; z-index:999; background: yellow">
+		<a href="http://kathmandulivinglabs.github.io/OpenCities/index.html" target="_blank">Education Facilities</a>
+		<a href="http://kathmandulivinglabs.github.io/OpenCities/hospital.html" target="_blank">Health Facilities</a>
+	</div>
 </body>
 </html>

@@ -9,10 +9,6 @@
 		html, body, #map {margin: 0; width: *; height: *;}
 	</style-->
 	<style>
-		#map{
-			height='100%',
-			width='100%'
-		}
 	</style>
 </head>
 <body>
@@ -109,9 +105,9 @@
 	var proj4326 = new OpenLayers.Projection('EPSG:4326');
 	var proj900913 = new OpenLayers.Projection('EPSG:900913');
 	var xcenter = 85.33141;
-	var ycenter = 27.72223;
+	var ycenter = 27.7;
 	var center = new OpenLayers.LonLat(xcenter,ycenter);
-	var zoom = 12
+	var zoom = 11;
 	var map = new OpenLayers.Map('map',{
 			projection:proj4326
 	});
@@ -158,11 +154,11 @@
 	            return pix;
 	        },
 	        graphicHeight: function(feature){
-				return(feature.cluster)? (feature.attributes.count*2) : (1+(9-2)/6*(map.getZoom()*1.75-12))
+				return(feature.cluster)? (10+feature.attributes.count*.2) : (1+(12-2)/6*(map.getZoom()*1.75-12))
 			},
 				
 			graphicWidth: function(feature){
-				return(feature.cluster)? (feature.attributes.count*2) : (1+(9-2)/6*(map.getZoom()*1.75-12))
+				return(feature.cluster)? (10+feature.attributes.count*.2) : (1+(12-2)/6*(map.getZoom()*1.75-12))
 			
 			},
 
@@ -189,7 +185,7 @@
 			strategies: [
 				//strategy
 				new OpenLayers.Strategy.Fixed(),
-				new OpenLayers.Strategy.Cluster({distance: 50, threshold: 5})//for clusturing strategy.
+				new OpenLayers.Strategy.Cluster({distance: 15, threshold: 3})//for clusturing strategy.
 			],
 			protocol: new OpenLayers.Protocol.HTTP({
 				url: "data/health_centroid.geojson",   //<-- relative or absolute URL to your .osm file
@@ -217,6 +213,17 @@
 
 
 	map.addLayer(healthfacilities);
+
+	var kv_basin = new OpenLayers.Layer.Vector('kv_basin',{
+			strategies: [new OpenLayers.Strategy.Fixed()
+				],
+			protocol: new OpenLayers.Protocol.HTTP({
+				url: "data/kv_basin.geojson",   //<-- relative or absolute URL to your .osm file
+				format: new OpenLayers.Format.GeoJSON()
+			}),
+			projection: map.displayProjection
+		});
+		map.addLayer(kv_basin);
 		
 	var controller = new OpenLayers.Control.SelectFeature(healthfacilities,{
 		onSelect:onFeatureSelect,
@@ -227,6 +234,10 @@
 	controller.activate();
 	map.setBaseLayer(mapbox);
 	</script> 
+	<div style="position:absolute; top:20px; left:50px; z-index:999; background: yellow">
+		<a href="http://kathmandulivinglabs.github.io/OpenCities/index.html" target="_blank">Education Facilities</a>
+		<a href="http://kathmandulivinglabs.github.io/OpenCities/hospital.html" target="_blank">Health Facilities</a>
+	</div>
 
 </body>
 </html>
