@@ -22,10 +22,6 @@
 			projection:proj4326
 		});
 		map.addControl(new OpenLayers.Control.LayerSwitcher());
-		// osm = new OpenLayers.Layer.OSM("OSM",null,{attribution: "&copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors (ODbL)"});
-		// map.addLayer(osm);
-		// 
-
 		map.addLayer(new OpenLayers.Layer.Stamen("toner"));
     	map.addLayer(new OpenLayers.Layer.OSM("OpenCycleMap", ['http://tile.opencyclemap.org/cycle/${z}/${x}/${y}.png']));
 
@@ -162,10 +158,30 @@
 					return(feature.cluster) ? (feature.attributes.count) : "";
 				},
 				graphicHeight: function(feature){
-					return(feature.cluster)? (20+feature.attributes.count*.2) : 200/map.getZoom();
+					if (feature.cluster){
+						if (feature.attributes.count>25){
+							return(12+feature.attributes.count*.2);
+						}
+						else{
+							return 20;
+						}
+					}
+					else{
+						 return (200/map.getZoom());
+					}
 				},
 				graphicWidth: function(feature){
-					return(feature.cluster)? (20+feature.attributes.count*.2) : 200/map.getZoom();
+					if (feature.cluster){
+						if (feature.attributes.count>25){
+							return(12+feature.attributes.count*.2);
+						}
+						else{
+							return 20;
+						}
+					}
+					else{
+						 return (200/map.getZoom());
+					}
 				},
 				strokeWidth: function(feature){
 					var rad = (2+(9-2)/6*(map.getZoom()-12))/5;
@@ -182,67 +198,13 @@
 			}
 		});
 		
-		// //styling for health facilities
-		// var health_style = new OpenLayers.Style({
-		// 	pointRadius: "${radius}",
-		// 	fillOpacity: 0.7,
-		// 	fillColor:'red',
-		// 	strokeColor:'blue',
-		// 	strokeWidth: "${strokeWidth}",
-		// 	fontcolor:'blue',
-		// 	graphicWidth: "${graphicWidth}",
-		// 	graphicHeight: "${graphicHeight}",
-		// 	externalGraphic:"${symbol}"//'icon/school_color_icon.png'
-		// },
-		// {
-		// 	context:{
-		// 		radius: function(feature) {
-		//             var pix = 2;
-		//             if(feature.cluster) {
-		//                 pix = Math.min(feature.attributes.count, 7) + 2;
-		//             }
-		//             return pix;
-		//         },
-		//         graphicHeight: function(feature){
-		// 			// var rad=map.getZoom()*map.getZoom()*map.getZoom()*map.getZoom()*0.00009;
-		// 			return(feature.cluster)? (feature.attributes.count*2) : (1+(9-2)/6*(map.getZoom()*1.75-12))
-
-		// 			// var rad = 1+(9-2)/6*(map.getZoom()-12);
-		// 			// console.log('calculated radius='+rad);
-		// 			// return rad;
-		// 		},
-					
-		// 		graphicWidth: function(feature){
-					
-		// 			return(feature.cluster)? (feature.attributes.count*2) : (1+(9-2)/6*(map.getZoom()*1.75-12))
-				
-		// 		},
-
-
-		// 		strokeWidth: function(feature){
-					
-		// 			var rad = (2+(9-2)/6*(map.getZoom()-12))/5;
-		// 			return rad;
-				
-		// 		},
-					
-		// 		symbol: function(feature){
-		// 			if (feature.cluster){
-		// 				return 'icon/icon1.jpg';//instead return another symbol for 
-		// 			}
-		// 			else{
-		// 				return 'icon/health_icon.jpg';
-		// 			}
-		// 		}
-		// 	}
-		// });
-
+		
 		//layers
 		var odri_schools = new OpenLayers.Layer.Vector('OPENDRI MAPPED SCHOOLS ',{
 			strategies: [
 				//strategy
 				new OpenLayers.Strategy.Fixed(),
-				new OpenLayers.Strategy.Cluster({distance: 50, threshold: 2})//for clusturing 2 schools within 50 pixel distance.
+				new OpenLayers.Strategy.Cluster({distance: 30, threshold: 2})//for clusturing 2 schools within 50 pixel distance.
 			],
 			protocol: new OpenLayers.Protocol.HTTP({
 				url: "data/education_centroid.geojson",   //<-- relative or absolute URL to your .osm file
@@ -254,21 +216,7 @@
 		);
 		map.addLayer(odri_schools);
 
-		//health facilitites variable
-		// var odri_health = new OpenLayers.Layer.Vector('OPENDRI HEALTH MAPPING',{
-		// 	strategies: [new OpenLayers.Strategy.Fixed(),
-		// 		new OpenLayers.Strategy.Cluster({distance: 15, threshold: 2})//for clusturing strategy.
-		// 	],
-		// 	protocol: new OpenLayers.Protocol.HTTP({
-		// 		url: "data/health_centroid.geojson",   //<-- relative or absolute URL to your .osm file
-		// 		format: new OpenLayers.Format.GeoJSON()
-		// 	}),
-		// 	projection: map.displayProjection,
-		// 	styleMap: new OpenLayers.StyleMap({
-		// 		'default':health_style
-		// 	})
-		// });
-		// map.addLayer(odri_health);
+
 		
 		var kv_basin = new OpenLayers.Layer.Vector('kv_basin',{
 			strategies: [new OpenLayers.Strategy.Fixed()
@@ -301,9 +249,9 @@
      	selectControl1.activate();	
 
 	</script>
-	<div style="position:absolute; top:20px; left:50px; z-index:999;">
-		<a href="http://kathmandulivinglabs.github.io/OpenCities/index.html" target="_blank" class="classname">Education Facilities</a>
-		<a href="http://kathmandulivinglabs.github.io/OpenCities/hospital.html" target="_blank" class="classname">Health Facilities</a>
+	<div style="position:absolute; top:20px; left:50px; font:aerial; fontcolor=blue; z-index:999;">
+		<a href="http://kathmandulivinglabs.github.io/OpenCities/index.html" target="_blank" class="classname"><i>Education Facilities</a></i>
+		<a href="http://kathmandulivinglabs.github.io/OpenCities/hospital.html" target="_blank" class="classname"><i>Health Facilities</a></i>
 	</div>
 </body>
 </html>
