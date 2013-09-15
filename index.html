@@ -147,26 +147,15 @@
         
         function onFeatureUnselect(feature) {
             map.removePopup(feature.popup);
-<<<<<<< HEAD
-			selectControl.unselect();
-            feature.popup.destroy();
-            feature.popup = null;
-
-=======
 			selectControl.unselectAll();
             // feature.popup.destroy();
             // feature.popup = null;
->>>>>>> 7ee796e8a3570fff41fab1795e943709f8a489cb
         }
 		
 		var styleschool = new OpenLayers.Style({
 			label:"${name}",
-<<<<<<< HEAD
-			//fontSize:"$(font)",
-=======
 			fontColor:"red",
 			fontSize:"10",
->>>>>>> 7ee796e8a3570fff41fab1795e943709f8a489cb
 			graphicWidth: "${graphicWidth}",
 			graphicHeight: "${graphicHeight}",
 			externalGraphic: "${symbol}"
