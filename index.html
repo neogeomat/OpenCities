@@ -64,16 +64,17 @@
             }
         );
         map.addLayer(mapbox);
-        map.setBaseLayer(mapbox);
+        map.setBaseLayer(baseOSM);
         map.setCenter(center.transform(proj4326,proj900913),zoom);
         // map.setCenter(center,zoom);
        
 
         function onPopupClose(evt) {
-            feature=evt.feature;
-            selectControl.unselect(feature);
-            feature.popup.destroy();
-            feature.popup = null;
+            // feature=evt.feature;
+            // selectControl.unselect(feature);
+            selectControl.unselectAll();
+            // feature.popup.destroy();
+            // feature.popup = null;
         }
         
         function onFeatureSelect(feature) {
@@ -146,17 +147,17 @@
         
         function onFeatureUnselect(feature) {
             map.removePopup(feature.popup);
-			selectControl.unselect();
-            feature.popup.destroy();
-            feature.popup = null;
+			selectControl.unselectAll();
+            // feature.popup.destroy();
+            // feature.popup = null;
         }
 		
 		var styleschool = new OpenLayers.Style({
-			// label:"${name}",
+			label:"${name}",
+			fontColor:"red",
+			fontSize:"10",
 			graphicWidth: "${graphicWidth}",
 			graphicHeight: "${graphicHeight}",
-			// graphicWidth: 10px,
-			// graphicHeight: 10px,
 			externalGraphic: "${symbol}"
 		},
 		{
@@ -178,7 +179,7 @@
 				},
 				symbol: function(feature){
 					if (feature.cluster){
-						return 'icon/accept.png';//instead return another symbol for 
+						return 'icon/Cluster_icon_1.png';//instead return another symbol for 
 					}
 					else{
 						return 'icon/school-24@2x.png';
@@ -247,7 +248,7 @@
 			strategies: [
 				//strategy
 				new OpenLayers.Strategy.Fixed(),
-				new OpenLayers.Strategy.Cluster({distance: 15, threshold: 2})//for clusturing strategy.
+				new OpenLayers.Strategy.Cluster({distance: 50, threshold: 2})//for clusturing strategy.
 			],
 			protocol: new OpenLayers.Protocol.HTTP({
 				url: "data/education_centroid.geojson",   //<-- relative or absolute URL to your .osm file
