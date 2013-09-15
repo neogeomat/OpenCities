@@ -1,16 +1,12 @@
 <html>
 <head>
 	<title></title>
+
 	<!-- // <script src="http://localhost/OpenLayers-2.12/OpenLayers.js" type="text/javascript"></script> -->
 	<!-- // <script src="http://localhost/OpenLayers-2.12/addins/stamen-maps.js" type="text/javascript"></script> -->
 	<script src="http://openlayers.org/api/2.12/OpenLayers.js" type="text/javascript"></script>
 	<script type="text/javascript" src="http://maps.stamen.com/js/tile.stamen.js?v1.2.3"></script>
-	<style>
-		.olPopup{
-			border-radius: "15px";
-			border-color: "green";
-		}
-	</style>
+	<link rel="stylesheet" type="text/css" href="/gitprojects/OpenCities/css/layer-buttons.css"/>
 </head>
 <body>
 	<div id='map'></div>
@@ -304,20 +300,12 @@
 		);
             
      	map.addControl(selectControl1);
-     	selectControl1.activate();
-
-     	//for mouse  hover event
-     	/*var selector = new OpenLayers.Control.SelectFeature(odri_schools,{
-	        hover:true,
-	        autoActivate:true
-    	});
-		map.addControl(selector);*/
-	
+     	selectControl1.activate();	
 
 	</script>
-	<div style="position:absolute; top:20px; left:50px; z-index:999; background: yellow">
-		<a href="http://kathmandulivinglabs.github.io/OpenCities/index.html" target="_blank">Education Facilities</a>
-		<a href="http://kathmandulivinglabs.github.io/OpenCities/hospital.html" target="_blank">Health Facilities</a>
+	<div style="position:absolute; top:20px; left:50px; z-index:999;">
+		<a href="http://kathmandulivinglabs.github.io/OpenCities/index.html" target="_blank" class="classname">Education Facilities</a>
+		<a href="http://kathmandulivinglabs.github.io/OpenCities/hospital.html" target="_blank" class="classname">Health Facilities</a>
 	</div>
 </body>
 </html>
