@@ -62,11 +62,7 @@
        
 
         function onPopupClose(evt) {
-            // feature=evt.feature;
-            // selectControl.unselect(feature);
             selectControl.unselectAll();
-            // feature.popup.destroy();
-            // feature.popup = null;
         }
         
         function onFeatureSelect(feature) {
@@ -78,7 +74,7 @@
 		    var FeatureXPos = feature.geometry.getBounds().getCenterPixel().x;
 		    var bLeft = (FeatureXPos >= MapXCenter);
 		    if (feature.cluster){
-		    	var popup_content_for_cluster="<div style='font-size:.8em; color:white; border:1px'><h3>" + "There are "+feature.attributes.count+" schools in this cluster <ul>";
+		    	var popup_content_for_cluster="<div style='font-size:.8em; border:1px'><h3>" + "There are "+feature.attributes.count+" Facilities in this cluster <ul>";
 		    	var i=0;
 		    	while(i<10){
 		    		if(i<feature.attributes.count){
@@ -140,14 +136,12 @@
         function onFeatureUnselect(feature) {
             map.removePopup(feature.popup);
 			selectControl.unselectAll();
-            // feature.popup.destroy();
-            // feature.popup = null;
         }
 		
 		var styleschool = new OpenLayers.Style({
 			label:"${name}",
 			fontColor:"red",
-			fontSize:"10",
+			fontSize:"12",
 			graphicWidth: "${graphicWidth}",
 			graphicHeight: "${graphicHeight}",
 			externalGraphic: "${symbol}"
@@ -160,32 +154,30 @@
 				graphicHeight: function(feature){
 					if (feature.cluster){
 						if (feature.attributes.count>25){
-							return(12+feature.attributes.count*.2);
+							return(12+feature.attributes.count*.15);
 						}
 						else{
-							return 20;
+							return 15;
 						}
 					}
 					else{
-						 return (200/map.getZoom());
+						 // return (200/map.getZoom());
+						 return 15;
 					}
 				},
 				graphicWidth: function(feature){
 					if (feature.cluster){
 						if (feature.attributes.count>25){
-							return(12+feature.attributes.count*.2);
+							return(12+feature.attributes.count*.15);
 						}
 						else{
-							return 20;
+							return 15;
 						}
 					}
 					else{
-						 return (200/map.getZoom());
+						 // return (200/map.getZoom());
+						 return 15;
 					}
-				},
-				strokeWidth: function(feature){
-					var rad = (2+(9-2)/6*(map.getZoom()-12))/5;
-					return rad;
 				},
 				symbol: function(feature){
 					if (feature.cluster){
@@ -197,7 +189,6 @@
 				}
 			}
 		});
-		
 		
 		//layers
 		var odri_schools = new OpenLayers.Layer.Vector('OPENDRI MAPPED SCHOOLS ',{
@@ -216,8 +207,6 @@
 		);
 		map.addLayer(odri_schools);
 
-
-		
 		var kv_basin = new OpenLayers.Layer.Vector('kv_basin',{
 			strategies: [new OpenLayers.Strategy.Fixed()
 				],
@@ -228,6 +217,27 @@
 			projection: map.displayProjection
 		});
 		map.addLayer(kv_basin);
+
+		map.events.on({
+			"zoomend":function(){
+				if(map.getZoom()<zoom){
+					odri_schools.display(false);
+				}
+				else{
+					odri_schools.display(true);
+				}
+			}
+		});
+		map.events.on({
+			"zoomend":function(){
+				if(map.getZoom()>zoom){
+					kv_basin.display(false);
+				}
+				else{
+					kv_basin.display(true);
+				}
+			}
+		});
 				
 		//controls
 		selectControl = new OpenLayers.Control.SelectFeature(odri_schools,{
@@ -240,8 +250,8 @@
      	selectControl.activate();	
 	</script>
 	<div style="position:absolute; top:20px; left:50px; font:aerial; fontcolor=blue; z-index:999;">
-		<a href="http://kathmandulivinglabs.github.io/OpenCities/index.html" target="_blank" class="classname"><i>Education Facilities</a></i>
-		<a href="http://kathmandulivinglabs.github.io/OpenCities/hospital.html" target="_blank" class="classname"><i>Health Facilities</a></i>
+		<a href="index.html" target="_blank" class="classname"><i>Education Facilities</a></i>
+		<a href="hospital.html" target="_blank" class="classname"><i>Health Facilities</a></i>
 	</div>
 </body>
 </html>

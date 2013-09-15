@@ -5,20 +5,13 @@
 	<!-- // <script src="http://localhost/OpenLayers-2.12/addins/stamen-maps.js" type="text/javascript"></script> -->
 	<script src="http://openlayers.org/api/2.12/OpenLayers.js" type="text/javascript"></script>
 	<script type="text/javascript" src="http://maps.stamen.com/js/tile.stamen.js?v1.2.3"></script>
-	<!--style>
-		html, body, #map {margin: 0; width: *; height: *;}
-	</style-->
-	<style>
-	</style>
+	<link rel="stylesheet" type="text/css" href="css/layer-buttons.css"/>
 </head>
 <body>
    <div id ="map"></div>
    <script type="text/javascript"> 
     function onPopupClose(evt){
-    	feature=evt.feature;
-        selectControl.unselect(feature);
-        feature.popup.destroy();
-        feature.popup = null;
+        selectControl.unselectAll();
     }
     
     function onFeatureSelect(feature){
@@ -30,7 +23,7 @@
 	    var FeatureXPos = feature.geometry.getBounds().getCenterPixel().x;
 	    var bLeft = (FeatureXPos >= MapXCenter);
 	    if (feature.cluster){
-	    	var popup_content_for_cluster="There are "+feature.attributes.count+" schools in this cluster <ul>";
+	    	var popup_content_for_cluster="<div style='font-size:.8em; border:1px'><h3>" + "There are "+feature.attributes.count+" Facilities in this cluster <ul>";
 	    	var i=0;
 	    	while(i<10){
 	    		if(i<feature.attributes.count){
@@ -39,9 +32,8 @@
 	    		i++;
 	    	}
 	    	if(feature.attributes.count>10){
-	    		popup_content_for_cluster+="</ul> and more...."
+	    		popup_content_for_cluster+="</ul> and more...." + "</h3></div>";
 	    	}
-	    	
 	    	if (bLeft){
 	    		var PopupPos1 = new OpenLayers.LonLat(map.getExtent().left,map.getExtent().top);
 	    		PopupPos1.lon +=  leftOffset * Reso;
@@ -59,14 +51,14 @@
                                      popup_content_for_cluster,
                                      null, false, onPopupClose
                                      );
-	    	// popup.setBackgroundColor('#ff0000');
             feature.popup = popup;
             map.addPopup(popup);
-
+            popup.backgroundColor="#23d981";
+            popup.div.style.borderRadius="25px";
+            popup.draw();
 	    }
-	    
 	    else{
-		    var popup_content="<div style='font-size:.8em; border:1px; '><h3>" + feature.attributes.name ;
+		    var popup_content="<div style='font-size:.8em; border:1px;'><h3>" + feature.attributes.name ;
 		    	popup_content+="</br>" + feature.attributes.amenity+"</br>"+feature.attributes.operator_t+"</h3></div>";
 		    if(bLeft){ // popup appears top-left position
 		        PopupPos = new OpenLayers.LonLat(MapExtent.left,MapExtent.top);
@@ -88,18 +80,15 @@
                 );
             feature.popup = popup;
             map.addPopup(popup);
-            popup.backgroundColor="light blue";
+            popup.backgroundColor="#17b0ab";
             popup.div.style.borderRadius="15px";
             popup.draw();
     	}
 	}
     
-
     function onFeatureUnselect(feature){
     	map.removePopup(feature.popup);
         selectControl.unselect();
-        feature.popup.destroy();
-        feature.popup = null;
     }
     
 	var proj4326 = new OpenLayers.Projection('EPSG:4326');
@@ -134,44 +123,52 @@
 	map.addLayer(mapbox);
 	map.setCenter(center.transform(proj4326,proj900913),zoom);
 	var health_style = new OpenLayers.Style({
-		pointRadius: "${radius}",
-		fillOpacity: 0.7,
+		label:"${name}",
 		fillColor:'red',
-		strokeColor:'blue',
-		strokeWidth: "${strokeWidth}",
-		fontcolor:'blue',
+		fontSize:"12",
 		graphicWidth: "${graphicWidth}",
 		graphicHeight: "${graphicHeight}",
-		externalGraphic:"${symbol}"//'icon/school_color_icon.png'
+		externalGraphic:"${symbol}"
 	},
 	{
 		context:{
-			radius: function(feature) {
-	            var pix = 2;
-	            if(feature.cluster) {
-	                pix = Math.min(feature.attributes.count, 7) + 2;
-	            }
-	            return pix;
-	        },
+			name: function(feature){
+					return(feature.cluster) ? (feature.attributes.count) : "";
+				},
+			
 	        graphicHeight: function(feature){
-				return(feature.cluster)? (15+feature.attributes.count*.2) : (1+(12-2)/6*(map.getZoom()*1.75-12))
+				if (feature.cluster){
+					if (feature.attributes.count>25){
+						return(12+feature.attributes.count*.15);
+					}
+					else{
+						return 15;
+					}
+				}
+				else{
+					 // return (200/map.getZoom());
+					 return 15;
+				}
 			},
 				
 			graphicWidth: function(feature){
-				return(feature.cluster)? (15+feature.attributes.count*.2) : (1+(12-2)/6*(map.getZoom()*1.75-12))
-			
-			},
+				if (feature.cluster){
+					if (feature.attributes.count>25){
+						return(12+feature.attributes.count*.15);
+					}
+					else{
+						return 15;
+					}
+				}
+				else{
+					 // return (200/map.getZoom());
+					 return 15;
+				}
 
-
-			strokeWidth: function(feature){
-				var rad = (2+(9-2)/6*(map.getZoom()-12))/5;
-				return rad;
-			
-			},
-				
+			},			
 			symbol: function(feature){
 				if (feature.cluster){
-					return 'icon/add.png';//instead return another symbol for 
+					return 'icon/Cluster_icon_1.png';//instead return another symbol for 
 				}
 				else{
 					return 'icon/hospital-24@2x.png';
@@ -180,36 +177,19 @@
 		}
 	});
 
- 	var healthfacilities = new OpenLayers.Layer.Vector('OPENDRI MAPPED HEALTH FACILITIES ',	
-		{
-			strategies: [
-				//strategy
-				new OpenLayers.Strategy.Fixed(),
-				new OpenLayers.Strategy.Cluster({distance: 15, threshold: 3})//for clusturing strategy.
-			],
-			protocol: new OpenLayers.Protocol.HTTP({
-				url: "data/health_centroid.geojson",   //<-- relative or absolute URL to your .osm file
-				format: new OpenLayers.Format.GeoJSON()
-			}),
-			projection: map.displayProjection,
-			styleMap: new OpenLayers.StyleMap({'default':health_style})
-		}
-		);
-		// map.addLayer(odri_schools);
-	// var healthfacilities = new OpenLayers.Layer.Vector('KLL mapped healthfacilities',{
-	// 	stratagies:[
-	// 		new OpenLayers.Strategy.Fixed(),
-	// 		new OpenLayers.Strategy.Cluster({distance: 50, threshold: 5})//for clusturing strategy.
-	// 		]
-	// 	,
-	// 	protocol: new OpenLayers.Protocol.HTTP({
-	// 			url: "data/health_centroid.geojson",   //health facilities' centroid
-	// 			format: new OpenLayers.Format.GeoJSON()
-	// 	}),
-	// 	projection: map.displayProjection,
-	// 	styleMap: new OpenLayers.StyleMap({'default':health_style})
-
-	// });
+ 	var healthfacilities = new OpenLayers.Layer.Vector('OPENDRI MAPPED HEALTH FACILITIES ',{
+		strategies: [
+			//strategy
+			new OpenLayers.Strategy.Fixed(),
+			new OpenLayers.Strategy.Cluster({distance: 15, threshold: 3})//for clusturing strategy.
+		],
+		protocol: new OpenLayers.Protocol.HTTP({
+			url: "data/health_centroid.geojson",   //<-- relative or absolute URL to your .osm file
+			format: new OpenLayers.Format.GeoJSON()
+		}),
+		projection: map.displayProjection,
+		styleMap: new OpenLayers.StyleMap({'default':health_style})
+	});
 
 
 	map.addLayer(healthfacilities);
@@ -223,7 +203,29 @@
 			}),
 			projection: map.displayProjection
 		});
-		map.addLayer(kv_basin);
+	map.addLayer(kv_basin);
+
+	map.events.on({
+		"zoomend":function(){
+			if(map.getZoom()<zoom){
+				healthfacilities.display(false);
+			}
+			else{
+				healthfacilities.display(true);
+			}
+		}
+	});
+	
+	map.events.on({
+		"zoomend":function(){
+			if(map.getZoom()>zoom){
+				kv_basin.display(false);
+			}
+			else{
+				kv_basin.display(true);
+			}
+		}
+	});
 		
 	var controller = new OpenLayers.Control.SelectFeature(healthfacilities,{
 		onSelect:onFeatureSelect,
@@ -234,10 +236,9 @@
 	controller.activate();
 	map.setBaseLayer(mapbox);
 	</script> 
-	<div style="position:absolute; top:20px; left:50px; z-index:999; background: yellow">
-		<a href="http://kathmandulivinglabs.github.io/OpenCities/index.html" target="_blank">Education Facilities</a>
-		<a href="http://kathmandulivinglabs.github.io/OpenCities/hospital.html" target="_blank">Health Facilities</a>
+	<div style="position:absolute; top:20px; left:50px; font:aerial; fontcolor=blue; z-index:999;">
+		<a href="index.html" target="_blank" class="classname"><i>Education Facilities</a></i>
+		<a href="hospital.html" target="_blank" class="classname"><i>Health Facilities</a></i>
 	</div>
-
 </body>
 </html>
