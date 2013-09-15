@@ -168,24 +168,16 @@
 				graphicHeight: function(feature){
 					return(feature.cluster)? (20+feature.attributes.count*.2) : 200/map.getZoom();
 				},
-				font:function(feature){
-					return (feature.cluster) ? ():()
-				}
 				graphicWidth: function(feature){
 					return(feature.cluster)? (20+feature.attributes.count*.2) : 200/map.getZoom();
 				},
-
 				strokeWidth: function(feature){
 					var rad = (2+(9-2)/6*(map.getZoom()-12))/5;
 					return rad;
 				},
 				symbol: function(feature){
 					if (feature.cluster){
-<<<<<<< HEAD
-						return 'icon/school-24@2x.png';//instead return another symbol for 
-=======
 						return 'icon/Cluster_icon_1.png';//instead return another symbol for 
->>>>>>> 7ee796e8a3570fff41fab1795e943709f8a489cb
 					}
 					else{
 						return 'icon/school-24@2x.png';
@@ -194,67 +186,67 @@
 			}
 		});
 		
-		//styling for health facilities
-		var health_style = new OpenLayers.Style({
-			pointRadius: "${radius}",
-			fillOpacity: 0.7,
-			fillColor:'red',
-			strokeColor:'blue',
-			strokeWidth: "${strokeWidth}",
-			fontcolor:'blue',
-			graphicWidth: "${graphicWidth}",
-			graphicHeight: "${graphicHeight}",
-			externalGraphic:"${symbol}"//'icon/school_color_icon.png'
-		},
-		{
-			context:{
-				radius: function(feature) {
-		            var pix = 2;
-		            if(feature.cluster) {
-		                pix = Math.min(feature.attributes.count, 7) + 2;
-		            }
-		            return pix;
-		        },
-		        graphicHeight: function(feature){
-					// var rad=map.getZoom()*map.getZoom()*map.getZoom()*map.getZoom()*0.00009;
-					return(feature.cluster)? (feature.attributes.count*2) : (1+(9-2)/6*(map.getZoom()*1.75-12))
+		// //styling for health facilities
+		// var health_style = new OpenLayers.Style({
+		// 	pointRadius: "${radius}",
+		// 	fillOpacity: 0.7,
+		// 	fillColor:'red',
+		// 	strokeColor:'blue',
+		// 	strokeWidth: "${strokeWidth}",
+		// 	fontcolor:'blue',
+		// 	graphicWidth: "${graphicWidth}",
+		// 	graphicHeight: "${graphicHeight}",
+		// 	externalGraphic:"${symbol}"//'icon/school_color_icon.png'
+		// },
+		// {
+		// 	context:{
+		// 		radius: function(feature) {
+		//             var pix = 2;
+		//             if(feature.cluster) {
+		//                 pix = Math.min(feature.attributes.count, 7) + 2;
+		//             }
+		//             return pix;
+		//         },
+		//         graphicHeight: function(feature){
+		// 			// var rad=map.getZoom()*map.getZoom()*map.getZoom()*map.getZoom()*0.00009;
+		// 			return(feature.cluster)? (feature.attributes.count*2) : (1+(9-2)/6*(map.getZoom()*1.75-12))
 
-					// var rad = 1+(9-2)/6*(map.getZoom()-12);
-					// console.log('calculated radius='+rad);
-					// return rad;
-				},
+		// 			// var rad = 1+(9-2)/6*(map.getZoom()-12);
+		// 			// console.log('calculated radius='+rad);
+		// 			// return rad;
+		// 		},
 					
-				graphicWidth: function(feature){
+		// 		graphicWidth: function(feature){
 					
-					return(feature.cluster)? (feature.attributes.count*2) : (1+(9-2)/6*(map.getZoom()*1.75-12))
+		// 			return(feature.cluster)? (feature.attributes.count*2) : (1+(9-2)/6*(map.getZoom()*1.75-12))
 				
-				},
+		// 		},
 
 
-				strokeWidth: function(feature){
+		// 		strokeWidth: function(feature){
 					
-					var rad = (2+(9-2)/6*(map.getZoom()-12))/5;
-					return rad;
+		// 			var rad = (2+(9-2)/6*(map.getZoom()-12))/5;
+		// 			return rad;
 				
-				},
+		// 		},
 					
-				symbol: function(feature){
-					if (feature.cluster){
-						return 'icon/icon1.jpg';//instead return another symbol for 
-					}
-					else{
-						return 'icon/health_icon.jpg';
-					}
-				}
-			}
-		});
+		// 		symbol: function(feature){
+		// 			if (feature.cluster){
+		// 				return 'icon/icon1.jpg';//instead return another symbol for 
+		// 			}
+		// 			else{
+		// 				return 'icon/health_icon.jpg';
+		// 			}
+		// 		}
+		// 	}
+		// });
 
 		//layers
 		var odri_schools = new OpenLayers.Layer.Vector('OPENDRI MAPPED SCHOOLS ',{
 			strategies: [
 				//strategy
 				new OpenLayers.Strategy.Fixed(),
-				new OpenLayers.Strategy.Cluster({distance: 50, threshold: 2})//for clusturing strategy.
+				new OpenLayers.Strategy.Cluster({distance: 50, threshold: 2})//for clusturing 2 schools within 50 pixel distance.
 			],
 			protocol: new OpenLayers.Protocol.HTTP({
 				url: "data/education_centroid.geojson",   //<-- relative or absolute URL to your .osm file
@@ -267,19 +259,19 @@
 		map.addLayer(odri_schools);
 
 		//health facilitites variable
-		var odri_health = new OpenLayers.Layer.Vector('OPENDRI HEALTH MAPPING',{
-			strategies: [new OpenLayers.Strategy.Fixed(),
-				new OpenLayers.Strategy.Cluster({distance: 15, threshold: 2})//for clusturing strategy.
-			],
-			protocol: new OpenLayers.Protocol.HTTP({
-				url: "data/health_centroid.geojson",   //<-- relative or absolute URL to your .osm file
-				format: new OpenLayers.Format.GeoJSON()
-			}),
-			projection: map.displayProjection,
-			styleMap: new OpenLayers.StyleMap({
-				'default':health_style
-			})
-		});
+		// var odri_health = new OpenLayers.Layer.Vector('OPENDRI HEALTH MAPPING',{
+		// 	strategies: [new OpenLayers.Strategy.Fixed(),
+		// 		new OpenLayers.Strategy.Cluster({distance: 15, threshold: 2})//for clusturing strategy.
+		// 	],
+		// 	protocol: new OpenLayers.Protocol.HTTP({
+		// 		url: "data/health_centroid.geojson",   //<-- relative or absolute URL to your .osm file
+		// 		format: new OpenLayers.Format.GeoJSON()
+		// 	}),
+		// 	projection: map.displayProjection,
+		// 	styleMap: new OpenLayers.StyleMap({
+		// 		'default':health_style
+		// 	})
+		// });
 		// map.addLayer(odri_health);
 		
 		var kv_basin = new OpenLayers.Layer.Vector('kv_basin',{
