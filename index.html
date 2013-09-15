@@ -85,7 +85,7 @@
 		    var FeatureXPos = feature.geometry.getBounds().getCenterPixel().x;
 		    var bLeft = (FeatureXPos >= MapXCenter);
 		    if (feature.cluster){
-		    	var popup_content_for_cluster="There are "+feature.attributes.count+" schools in this cluster <ul>";
+		    	var popup_content_for_cluster="<div style='font-size:.8em; color:white; border:1px'><h3>" + "There are "+feature.attributes.count+" schools in this cluster <ul>";
 		    	var i=0;
 		    	while(i<10){
 		    		if(i<feature.attributes.count){
@@ -94,7 +94,7 @@
 		    		i++;
 		    	}
 		    	if(feature.attributes.count>10){
-		    		popup_content_for_cluster+="</ul> and more...."
+		    		popup_content_for_cluster+="</ul> and more...." + "</h3></div>"
 		    	}
 		    	if (bLeft){
 		    		var PopupPos1 = new OpenLayers.LonLat(MapExtent.left,MapExtent.top);
@@ -112,12 +112,12 @@
 	                                     null, false, onPopupClose);
 	            feature.popup = popup1;
 	            map.addPopup(popup1);
-	            popup1.backgroundColor="light blue";
-	            popup1.div.style.borderRadius="15px";
+	            popup1.backgroundColor="#23d981";
+	            popup1.div.style.borderRadius="25px";
 	            popup1.draw();
 		    }
 		    else{
-			    var popup_content="<div style='font-size:.8em; border:1px'><h3>" + feature.attributes.name ;
+			    var popup_content="<div style='font-size:.8em; color:white; border:1px'><h3>" + feature.attributes.name ;
 			    popup_content += "</br>" + feature.attributes.operator_t + "</br>"+feature.attributes.isced_leve+"</h3></div>"
 			    if(bLeft){ // popup appears top-left position
 			        PopupPos = new OpenLayers.LonLat(MapExtent.left,MapExtent.top);
@@ -138,7 +138,7 @@
 	                                     null, false, onPopupClose);
 	            feature.popup = popup;
 	            map.addPopup(popup);
-	            popup.backgroundColor="light blue";
+	            popup.backgroundColor="#17b0ab";
 	            popup.div.style.borderRadius="15px";
 	            popup.draw();
         	}
@@ -149,10 +149,12 @@
 			selectControl.unselect();
             feature.popup.destroy();
             feature.popup = null;
+
         }
 		
 		var styleschool = new OpenLayers.Style({
-			// label:"${name}",
+			label:"${name}",
+			//fontSize:"$(font)",
 			graphicWidth: "${graphicWidth}",
 			graphicHeight: "${graphicHeight}",
 			// graphicWidth: 10px,
@@ -162,14 +164,16 @@
 		{
 			context:{
 				name: function(feature){
-					return(feature.cluster)?(feature.attributes.count):"";
+					return(feature.cluster) ? (feature.attributes.count) : "";
 				},
 				graphicHeight: function(feature){
-					return(feature.cluster)? (15+feature.attributes.count*.2) : 200/map.getZoom();
+					return(feature.cluster)? (20+feature.attributes.count*.2) : 200/map.getZoom();
 				},
-				
+				font:function(feature){
+					return (feature.cluster) ? ():()
+				}
 				graphicWidth: function(feature){
-					return(feature.cluster)? (15+feature.attributes.count*.2) : 200/map.getZoom();
+					return(feature.cluster)? (20+feature.attributes.count*.2) : 200/map.getZoom();
 				},
 
 				strokeWidth: function(feature){
@@ -178,7 +182,7 @@
 				},
 				symbol: function(feature){
 					if (feature.cluster){
-						return 'icon/accept.png';//instead return another symbol for 
+						return 'icon/school-24@2x.png';//instead return another symbol for 
 					}
 					else{
 						return 'icon/school-24@2x.png';
@@ -233,7 +237,7 @@
 					
 				symbol: function(feature){
 					if (feature.cluster){
-						return 'icon/add.png';//instead return another symbol for 
+						return 'icon/icon1.jpg';//instead return another symbol for 
 					}
 					else{
 						return 'icon/health_icon.jpg';
@@ -247,7 +251,7 @@
 			strategies: [
 				//strategy
 				new OpenLayers.Strategy.Fixed(),
-				new OpenLayers.Strategy.Cluster({distance: 15, threshold: 2})//for clusturing strategy.
+				new OpenLayers.Strategy.Cluster({distance: 50, threshold: 2})//for clusturing strategy.
 			],
 			protocol: new OpenLayers.Protocol.HTTP({
 				url: "data/education_centroid.geojson",   //<-- relative or absolute URL to your .osm file
@@ -314,9 +318,10 @@
 	
 
 	</script>
-	<div style="position:absolute; top:20px; left:50px; z-index:999; background: yellow">
-		<a href="http://kathmandulivinglabs.github.io/OpenCities/index.html" target="_blank">Education Facilities</a>
-		<a href="http://kathmandulivinglabs.github.io/OpenCities/hospital.html" target="_blank">Health Facilities</a>
+	<div style="position:absolute; top:30px; left:50px; z-index:111000; font: helvitica; background: #a6c918; width : 300; height : 45">
+		<a href="http://kathmandulivinglabs.github.io/OpenCities/index.html" target="_blank"><b><h4><i>Education Facilities</b></a>
+		<a href="http://kathmandulivinglabs.github.io/OpenCities/hospital.html" target="_blank">Health Facilities</a></i></h4>
 	</div>
+
 </body>
 </html>
