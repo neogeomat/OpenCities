@@ -96,7 +96,7 @@
 		    	PopupPos1.lat -= topOffset * Reso;
 		    	var popup1 = new OpenLayers.Popup.Anchored("chicken", 
 	                                     PopupPos1,
-	                                     new OpenLayers.Size(225.225),
+	                                     new OpenLayers.Size(250.225),
 	                                     popup_content_for_cluster,
 	                                     null, false, onPopupClose);
 	            feature.popup = popup1;
@@ -106,8 +106,14 @@
 	            popup1.draw();
 		    }
 		    else{
-			    var popup_content="<div style='font-size:.8em; color:white; border:1px'><h3>" + feature.attributes.name ;
-			    popup_content += "</br>" + feature.attributes.operator_t + "</br>"+feature.attributes.isced_leve+"</h3></div>"
+			    var popup_content="<div style='font-size:.8em; color:black; border:1px'><h3>" + feature.attributes.name;
+			    popup_content+="<ul>"
+			    if(feature.attributes.isced_leve){
+			    	popup_content += "<li>"+feature.attributes.isced_leve+"</li>";
+			    }
+			 	popup_content +="<li>"+feature.attributes.operator_t+"</li></h3></div>";
+			 	popup_content +="</ul>";
+				
 			    if(bLeft){ // popup appears top-left position
 			        PopupPos = new OpenLayers.LonLat(MapExtent.left,MapExtent.top);
 			        PopupPos.lon += leftOffset * Reso;
@@ -122,12 +128,12 @@
 	            
 	            var popup = new OpenLayers.Popup.Anchored("chicken", 
 	                                     PopupPos,
-	                                     new OpenLayers.Size(225.225),
+	                                     new OpenLayers.Size(250.225),
 	                                     popup_content,
 	                                     null, false, onPopupClose);
 	            feature.popup = popup;
 	            map.addPopup(popup);
-	            popup.backgroundColor="#17b0ab";
+	            popup.backgroundColor="#23d981";
 	            popup.div.style.borderRadius="15px";
 	            popup.draw();
         	}
@@ -189,6 +195,61 @@
 				}
 			}
 		});
+
+		var health_style = new OpenLayers.Style({
+			label:"${name}",
+			fillColor:"red",
+			fontColor:"red",
+			fontSize:"12",
+			graphicWidth: "${graphicWidth}",
+			graphicHeight: "${graphicHeight}",
+			externalGraphic:"${symbol}"
+		},
+		{
+			context:{
+				name: function(feature){
+						return(feature.cluster) ? (feature.attributes.count) : "";
+					},
+				
+		        graphicHeight: function(feature){
+					if (feature.cluster){
+						if (feature.attributes.count>25){
+							return(12+feature.attributes.count*.15);
+						}
+						else{
+							return 15;
+						}
+					}
+					else{
+						 // return (200/map.getZoom());
+						 return 15;
+					}
+				},
+					
+				graphicWidth: function(feature){
+					if (feature.cluster){
+						if (feature.attributes.count>25){
+							return(12+feature.attributes.count*.15);
+						}
+						else{
+							return 15;
+						}
+					}
+					else{
+						 // return (200/map.getZoom());
+						 return 15;
+					}
+				},			
+				symbol: function(feature){
+					if (feature.cluster){
+						return 'icon/Cluster_icon_1.png';//instead return another symbol for 
+					}
+					else{
+						return 'icon/hospital-24@2x.png';
+					}
+				}
+			}
+		});
 		
 		//layers
 		var odri_schools = new OpenLayers.Layer.Vector('OPENDRI MAPPED SCHOOLS ',{
@@ -207,6 +268,22 @@
 		);
 		map.addLayer(odri_schools);
 
+		var healthfacilities = new OpenLayers.Layer.Vector('OPENDRI MAPPED HEALTH FACILITIES ',{
+			strategies: [
+				//strategy
+				new OpenLayers.Strategy.Fixed(),
+				new OpenLayers.Strategy.Cluster({distance: 15, threshold: 3})//for clusturing strategy.
+			],
+			protocol: new OpenLayers.Protocol.HTTP({
+				url: "data/health_centroid.geojson",   //<-- relative or absolute URL to your .osm file
+				format: new OpenLayers.Format.GeoJSON()
+			}),
+			projection: map.displayProjection,
+			styleMap: new OpenLayers.StyleMap({'default':health_style})
+		});
+		// map.addLayer(healthfacilities);
+		// healthfacilities.display(false);
+
 		var kv_basin = new OpenLayers.Layer.Vector('kv_basin',{
 			strategies: [new OpenLayers.Strategy.Fixed()
 				],
@@ -219,7 +296,7 @@
 		map.addLayer(kv_basin);
 
 		map.events.on({
-			"zoomend":function(){
+			"moveend":function(){
 				if(map.getZoom()<zoom){
 					odri_schools.display(false);
 				}
@@ -229,12 +306,22 @@
 			}
 		});
 		map.events.on({
-			"zoomend":function(){
+			"moveend":function(){
 				if(map.getZoom()>zoom){
 					kv_basin.display(false);
 				}
 				else{
 					kv_basin.display(true);
+				}
+			}
+		});
+		map.events.on({
+			"moveend":function(){
+				if(map.getZoom()<zoom){
+					healthfacilities.display(false);
+				}
+				else{
+					healthfacilities.display(true);
 				}
 			}
 		});
@@ -248,10 +335,23 @@
     	);    
      	map.addControl(selectControl);
      	selectControl.activate();	
+
+     	var controller = new OpenLayers.Control.SelectFeature(healthfacilities,{
+			onSelect:onFeatureSelect,
+			onUnselect:onFeatureUnselect,
+			hover:true
+		});
+		map.addControl(controller);
+		controller.activate();
+		map.setBaseLayer(mapbox);
 	</script>
 	<div style="position:absolute; top:20px; left:50px; font:aerial; fontcolor=blue; z-index:999;">
-		<a href="index.html" target="_blank" class="classname"><i>Education Facilities</a></i>
-		<a href="hospital.html" target="_blank" class="classname"><i>Health Facilities</a></i>
+		<label class="classname">
+		<input type="radio" name="togglelayer" checked onClick="map.removeLayer(healthfacilities);map.addLayer(odri_schools);">Education</input>
+		</label>
+		<label class="classname">
+		<input type="radio" name="togglelayer" onClick="map.removeLayer(odri_schools);map.addLayer(healthfacilities);">Health</input>
+		</label>
 	</div>
 </body>
 </html>
