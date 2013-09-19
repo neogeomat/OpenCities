@@ -9,15 +9,16 @@
 	<link rel="stylesheet" type="text/css" href="css/layer-buttons.css"/>
 </head>
 <body>
+	<div>Use Checkbox to Toggele Boundary</div>
 	<div id='map'></div>
 	<script type="text/javascript">
 		//the variables 
 		var proj4326 = new OpenLayers.Projection("EPSG:4326");
 		var proj900913 = new OpenLayers.Projection("EPSG:900913");
-		var centerX = 85.2941;//491213.721224323//-123.1684986291807;//9497800;
+		var centerX = 85.2801;//491213.721224323//-123.1684986291807;//9497800;
 		var centerY = 27.7;//5456645.24607268//49.245339757767844;//3212000;
 		var center = new OpenLayers.LonLat(centerX, centerY);
-		var zoom = 14;
+		var zoom = 15;
 		var map = new OpenLayers.Map('map',{
 			projection:proj4326
 		});
@@ -36,7 +37,7 @@
 		map.addLayer(aerial);
         map.setCenter(center.transform(proj4326,proj900913),zoom);
 
-		var kv_basin = new OpenLayers.Layer.Vector('kv_basin',{
+		var kv_basin = new OpenLayers.Layer.Vector('kathmandu valley',{
 			strategies: [new OpenLayers.Strategy.Fixed()
 				],
 			protocol: new OpenLayers.Protocol.HTTP({
@@ -45,7 +46,9 @@
 			}),
 			projection: map.displayProjection
 		});
+		// kv_basin.display(false);
 		map.addLayer(kv_basin);
+
 	</script>
 </body>
 </html>
