@@ -1,0 +1,51 @@
+<html>
+<head>
+	<title></title>
+
+	<!-- // <script src="http://localhost/OpenLayers-2.12/OpenLayers.js" type="text/javascript"></script> -->
+	<!-- // <script src="http://localhost/OpenLayers-2.12/addins/stamen-maps.js" type="text/javascript"></script> -->
+	<script src="http://openlayers.org/api/2.12/OpenLayers.js" type="text/javascript"></script>
+	<script type="text/javascript" src="http://maps.stamen.com/js/tile.stamen.js?v1.2.3"></script>
+	<link rel="stylesheet" type="text/css" href="css/layer-buttons.css"/>
+</head>
+<body>
+	<div id='map'></div>
+	<script type="text/javascript">
+		//the variables 
+		var proj4326 = new OpenLayers.Projection("EPSG:4326");
+		var proj900913 = new OpenLayers.Projection("EPSG:900913");
+		var centerX = 85.2941;//491213.721224323//-123.1684986291807;//9497800;
+		var centerY = 27.7;//5456645.24607268//49.245339757767844;//3212000;
+		var center = new OpenLayers.LonLat(centerX, centerY);
+		var zoom = 14;
+		var map = new OpenLayers.Map('map',{
+			projection:proj4326
+		});
+		layerswitch = new OpenLayers.Control.LayerSwitcher();
+		
+		map.addControl(layerswitch);
+		layerswitch.maximizeControl();
+		// map.addLayer(new OpenLayers.Layer.Stamen("toner"));
+  //   	map.addLayer(new OpenLayers.Layer.OSM("OpenCycleMap", ['http://tile.opencyclemap.org/cycle/${z}/${x}/${y}.png']));
+
+  		var apiKey = "AqTGBsziZHIJYYxgivLBf0hVdrAk9mWO5cQcb8Yux8sW5M8c8opEC2lZqKR1ZZXf";
+    	var aerial = new OpenLayers.Layer.Bing({
+		    key: apiKey,
+		    type: "Aerial"
+		});
+		map.addLayer(aerial);
+        map.setCenter(center.transform(proj4326,proj900913),zoom);
+
+		var kv_basin = new OpenLayers.Layer.Vector('kv_basin',{
+			strategies: [new OpenLayers.Strategy.Fixed()
+				],
+			protocol: new OpenLayers.Protocol.HTTP({
+				url: "data/kv_basin.geojson",   //<-- relative or absolute URL to your .osm file
+				format: new OpenLayers.Format.GeoJSON()
+			}),
+			projection: map.displayProjection
+		});
+		map.addLayer(kv_basin);
+	</script>
+</body>
+</html>
