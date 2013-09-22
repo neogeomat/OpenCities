@@ -4,12 +4,24 @@
 
 	<!-- // <script src="http://localhost/OpenLayers-2.12/OpenLayers.js" type="text/javascript"></script> -->
 	<!-- // <script src="http://localhost/OpenLayers-2.12/addins/stamen-maps.js" type="text/javascript"></script> -->
-	<script src="http://openlayers.org/api/2.12/OpenLayers.js" type="text/javascript"></script>
+	<script src="http://openlayers.org/api/2.12/OpenLayers.light.js" type="text/javascript"></script>
+	<script type="text/javascript" src="js/Cluster.js"></script>
 	<script type="text/javascript" src="http://maps.stamen.com/js/tile.stamen.js?v1.2.3"></script>
 	<link rel="stylesheet" type="text/css" href="css/layer-buttons.css"/>
+	<link rel="stylesheet" type="text/css" href="css/popup-table.css"/>
 </head>
 <body>
+	<form name="input" action="javascript: submitform();" method="post" style="position:absolute; right:20px; top: 10px; z-index:999">
+	    <label for="query"></label> <input type="text" id="query" size=50 name="query" value="Search for address"/>
+	    <input type="submit" value="Submit"/>
+	</form>
 	<div id='map'></div>
+	<script type="text/javascript">
+		function toTitleCase(str)
+		{
+		    return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+		}
+	</script>
 	<script type="text/javascript">
 		//the variables 
 		var proj4326 = new OpenLayers.Projection("EPSG:4326");
@@ -73,18 +85,27 @@
 		    var MapXCenter = map.getExtent().getCenterPixel().x;
 		    var FeatureXPos = feature.geometry.getBounds().getCenterPixel().x;
 		    var bLeft = (FeatureXPos >= MapXCenter);
+		//	popup content
 		    if (feature.cluster){
-		    	var popup_content_for_cluster="<div style='font-size:.8em; border:1px'><h3>" + "There are "+feature.attributes.count+" Facilities in this cluster <ul>";
-		    	var i=0;
+				var popup_content_for_cluster="";
+		    	popup_content_for_cluster+="<div class='CSSTableGenerator'>";
+		    	popup_content_for_cluster+="<table><tr>";
+		    	popup_content_for_cluster+="<td>"+"SN"+"</td><td>Name of Facility </td>";
+		    	popup_content_for_cluster+="</tr>";
+		    	i=0;
 		    	while(i<10){
 		    		if(i<feature.attributes.count){
-		    			popup_content_for_cluster+="<li>"+feature.cluster[i].attributes.name+"</li>";
+		    			popup_content_for_cluster+="<tr><td>"+(i+1)+"</td><td>"+ toTitleCase(feature.cluster[i].attributes.name)+"</td></tr>";
 		    		}
 		    		i++;
 		    	}
+		    	popup_content_for_cluster+="</table>";
+		    	popup_content_for_cluster+="</div>";
 		    	if(feature.attributes.count>10){
-		    		popup_content_for_cluster+="</ul> and more...." + "</h3></div>"
+		    		popup_content_for_cluster+="and more....";
 		    	}
+		 
+		//	popup postion settings
 		    	if (bLeft){
 		    		var PopupPos1 = new OpenLayers.LonLat(MapExtent.left,MapExtent.top);
 		    		PopupPos1.lon +=  leftOffset * Reso;
@@ -100,19 +121,25 @@
 	                                     popup_content_for_cluster,
 	                                     null, false, onPopupClose);
 	            feature.popup = popup1;
+	            // popup1.displayClass="CSSTableGenerator";
+	            popup1.contentDisplayClass="CSSTableGenerator";
 	            map.addPopup(popup1);
-	            popup1.backgroundColor="#23d981";
+	            // popup1.backgroundColor="#23d981";
 	            popup1.div.style.borderRadius="25px";
 	            popup1.draw();
 		    }
 		    else{
-			    var popup_content="<div style='font-size:.8em; color:black; border:1px'><h3>" + feature.attributes.name;
-			    popup_content+="<ul>"
+			    var popup_content="";
+			    popup_content+="<div class='CSSTableGenerator'>";
+			    popup_content+="<table><tr>"; 
+			    popup_content+="<td colspan=2>"+ toTitleCase(feature.attributes.name)+ "</td>";
 			    if(feature.attributes.isced_leve){
-			    	popup_content += "<li>"+feature.attributes.isced_leve+"</li>";
+			    	popup_content += "<tr><td>Level</td><td>"+ toTitleCase(feature.attributes.isced_leve)+"</td></tr>";
 			    }
-			 	popup_content +="<li>"+feature.attributes.operator_t+"</li></h3></div>";
-			 	popup_content +="</ul>";
+			    // debugger;
+			 	popup_content +="<tr><td>Operator Type</td><td>"+ toTitleCase(feature.attributes.operator_t)+"</td></tr>";
+		    	popup_content_for_cluster+="</table>";
+		    	popup_content_for_cluster+="</div>";
 				
 			    if(bLeft){ // popup appears top-left position
 			        PopupPos = new OpenLayers.LonLat(MapExtent.left,MapExtent.top);
@@ -133,7 +160,7 @@
 	                                     null, false, onPopupClose);
 	            feature.popup = popup;
 	            map.addPopup(popup);
-	            popup.backgroundColor="#23d981";
+	            // popup.backgroundColor="#23d981";
 	            popup.div.style.borderRadius="15px";
 	            popup.draw();
         	}
@@ -146,7 +173,7 @@
 		
 		var styleschool = new OpenLayers.Style({
 			label:"${name}",
-			fontColor:"red",
+			fontColor:"yellow",
 			fontSize:"12",
 			graphicWidth: "${graphicWidth}",
 			graphicHeight: "${graphicHeight}",
@@ -187,7 +214,7 @@
 				},
 				symbol: function(feature){
 					if (feature.cluster){
-						return 'icon/Cluster_icon_1.png';//instead return another symbol for 
+						return 'icon/Cluster_icon_2.png';//instead return another symbol for 
 					}
 					else{
 						return 'icon/school-24@2x.png';
@@ -199,7 +226,7 @@
 		var health_style = new OpenLayers.Style({
 			label:"${name}",
 			fillColor:"red",
-			fontColor:"red",
+			fontColor:"yellow",
 			fontSize:"12",
 			graphicWidth: "${graphicWidth}",
 			graphicHeight: "${graphicHeight}",
@@ -242,7 +269,7 @@
 				},			
 				symbol: function(feature){
 					if (feature.cluster){
-						return 'icon/Cluster_icon_1.png';//instead return another symbol for 
+						return 'icon/Cluster_icon_2.png';//instead return another symbol for 
 					}
 					else{
 						return 'icon/hospital-24@2x.png';
@@ -256,7 +283,7 @@
 			strategies: [
 				//strategy
 				new OpenLayers.Strategy.Fixed(),
-				new OpenLayers.Strategy.Cluster({distance: 30, threshold: 2})//for clusturing 2 schools within 50 pixel distance.
+				new OpenLayers.Strategy.Cluster({distance: 20, threshold: 2})//for clusturing 2 schools within 50 pixel distance.
 			],
 			protocol: new OpenLayers.Protocol.HTTP({
 				url: "data/education_centroid.geojson",   //<-- relative or absolute URL to your .osm file
@@ -272,7 +299,7 @@
 			strategies: [
 				//strategy
 				new OpenLayers.Strategy.Fixed(),
-				new OpenLayers.Strategy.Cluster({distance: 15, threshold: 3})//for clusturing strategy.
+				new OpenLayers.Strategy.Cluster({distance: 10, threshold: 3})//for clusturing strategy.
 			],
 			protocol: new OpenLayers.Protocol.HTTP({
 				url: "data/health_centroid.geojson",   //<-- relative or absolute URL to your .osm file
@@ -345,6 +372,7 @@
 		controller.activate();
 		map.setBaseLayer(mapbox);
 	</script>
+
 	<div style="position:absolute; top:20px; left:50px; font:aerial; fontcolor=blue; z-index:999;">
 		<label class="classname">
 		<input type="radio" name="togglelayer" checked onClick="map.removeLayer(healthfacilities);map.addLayer(odri_schools);">Education</input>
@@ -353,5 +381,6 @@
 		<input type="radio" name="togglelayer" onClick="map.removeLayer(odri_schools);map.addLayer(healthfacilities);">Health</input>
 		</label>
 	</div>
+	<link rel="stylesheet" type="text/css" href="css/popup-table.css"/>
 </body>
 </html>
