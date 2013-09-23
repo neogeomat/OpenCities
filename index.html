@@ -140,10 +140,14 @@
 			    }
 			 	popup_content +="<tr><td>Operator Type</td><td>"+ toTitleCase(feature.attributes.operator_t)+"</td></tr>";
 			 	popup_content +="<tr><td>No of Buildings </td><td>" + feature.attributes.building_c+"</td></tr>";
-			 	popup_content +="<tr><td>X Ray</td><td>"+toTitleCase(feature.attributes.facility_x)+"</td></tr>";
-			 	popup_content +="<tr><td>ICU / CCU</td><td>"+toTitleCase(feature.attributes.facility_i)+"</td></tr>";
-			 	popup_content +="<tr><td>Ventilator</td><td>"+toTitleCase(feature.attributes.facility_v)+"</td></tr>";
-			 	popup_content +="<tr><td>Operating Theatre</td><td>"+toTitleCase(feature.attributes.facility_o)+"</td></tr>";
+			 	if(feature.attributes.facility_x){
+			 	popup_content +="<tr><td>X Ray</td><td>"+toTitleCase(feature.attributes.facility_x)+"</td></tr>";}
+			 	if(feature.attributes.facility_i){
+			 	popup_content +="<tr><td>ICU / CCU</td><td>"+toTitleCase(feature.attributes.facility_i)+"</td></tr>";}
+			 	if(feature.attributes.facility_v){
+			 	popup_content +="<tr><td>Ventilator</td><td>"+toTitleCase(feature.attributes.facility_v)+"</td></tr>";}
+			 	if(feature.attributes.facility_o){
+			 	popup_content +="<tr><td>Operating Theatre</td><td>"+toTitleCase(feature.attributes.facility_o)+"</td></tr>";}
 			 	// popup_content +="<tr><td>Facilities</td><td>"+((feature.attributes.facility_x=="yes")?"X Ray<br>":"")+((feature.attributes.facility_i=="yes")?"ICU / CCU<br>":"")+((feature.attributes.facility_v=="yes")?"Ventilator<br>":"")+((feature.attributes.facility_o=="yes")?"Operating theatre":"")+"</td></tr>";
 		    	popup_content_for_cluster+="</table>";
 		    	popup_content_for_cluster+="</div>";
