@@ -19,7 +19,7 @@
 	<script type="text/javascript">
 		function toTitleCase(str)
 		{
-		    return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+		    return str?str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}):"";
 		}
 	</script>
 	<script type="text/javascript">
@@ -131,12 +131,13 @@
 		    else{
 			    var popup_content="";
 			    popup_content+="<div class='CSSTableGenerator'>";
-			    popup_content+="<table><tr>"; 
-			    popup_content+="<td colspan=2>"+ toTitleCase(feature.attributes.name)+ "</td>";
+			    popup_content+="<table>"; 
+			    popup_content+="<tr><td colspan='2'>Details</td></tr>"
+			    popup_content+="<tr><td>Name</td><td>"+ toTitleCase(feature.attributes.name)+ "</td></tr>";
+			    // debugger;
 			    if(feature.attributes.isced_leve){
 			    	popup_content += "<tr><td>Level</td><td>"+ toTitleCase(feature.attributes.isced_leve)+"</td></tr>";
 			    }
-			    // debugger;
 			 	popup_content +="<tr><td>Operator Type</td><td>"+ toTitleCase(feature.attributes.operator_t)+"</td></tr>";
 			 	popup_content +="<tr><td>No of Buildings </td><td>" + feature.attributes.building_c+"</td></tr>";
 		    	popup_content_for_cluster+="</table>";
@@ -161,9 +162,9 @@
 	                                     null, false, onPopupClose);
 	            feature.popup = popup;
 	            map.addPopup(popup);
-	            // popup.backgroundColor="#23d981";
 	            popup.div.style.borderRadius="15px";
 	            popup.draw();
+	            // debugger;
         	}
     	}
         
