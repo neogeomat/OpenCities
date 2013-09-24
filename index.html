@@ -99,12 +99,12 @@
 		    		}
 		    		i++;
 		    	}
-		    	popup_content_for_cluster+="</table>";
-		    	popup_content_for_cluster+="</div>";
+		    	
 		    	if(feature.attributes.count>10){
-		    		popup_content_for_cluster+="and more....";
+		    		popup_content_for_cluster+="<tr><td colspan='2' style='text-align:center;'>And More....</td></tr>";
 		    	}
-		 
+		 		popup_content_for_cluster+="</table>";
+		    	popup_content_for_cluster+="</div>";
 		//	popup postion settings
 		    	if (bLeft){
 		    		var PopupPos1 = new OpenLayers.LonLat(MapExtent.left,MapExtent.top);
