@@ -13,9 +13,16 @@
 <body>
 	<div id='map'></div>
 	<script type="text/javascript">
-		function toTitleCase(str)
-		{
-		    return str?str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}):"";
+		function toTitleCase(str){
+		    if(str){
+		    	// debugger;
+		    	string = str.replace(/_/," ");
+		    	string = string.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+		    }
+		    else{
+		    	string = "";
+		    }
+		    return string;
 		}
 	</script>
 	<script type="text/javascript">
@@ -291,7 +298,7 @@
 				new OpenLayers.Strategy.Cluster({distance: 30, threshold: 2})//for clusturing 2 schools within 50 pixel distance.
 			],
 			protocol: new OpenLayers.Protocol.HTTP({
-				url: "data/education_centroid.geojson",   //<-- relative or absolute URL to your .osm file
+				url: "data/education_revised.geojson",   //<-- relative or absolute URL to your .osm file
 				format: new OpenLayers.Format.GeoJSON()
 			}),
 			projection: map.displayProjection,
