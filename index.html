@@ -9,9 +9,40 @@
 	<script type="text/javascript" src="http://maps.stamen.com/js/tile.stamen.js?v1.2.3"></script>
 	<link rel="stylesheet" type="text/css" href="css/layer-buttons.css"/>
 	<link rel="stylesheet" type="text/css" href="css/popup-table.css"/>
+	<style type="text/css">
+		#customZoom {
+            z-index: 1001;
+            position: relative;
+            top: 10px;
+            left: 10px;
+        }
+        #customZoom a {
+            text-decoration: none;
+            position: absolute;
+            display: block;
+            width: 50px;
+            text-align: center;
+            font-weight: bold;
+            color: #fff;
+            background: #369;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        #customZoom a:hover {
+            background: #036;
+        }
+        #customZoomOut {
+            top: 25px;
+        }
+	</style>
 </head>
 <body>
-	<div id='map'></div>
+	<div id='map'>
+		<div id="customZoom">
+                <a href="#customZoomIn" id="customZoomIn">in</a>
+                <a href="#customZoomOut" id="customZoomOut">out</a>
+        </div>	
+    </div>
 	<script type="text/javascript">
 		function toTitleCase(str){
 		    if(str){
@@ -34,9 +65,20 @@
 		var center = new OpenLayers.LonLat(centerX, centerY);
 		var zoom = 11;
 		var map = new OpenLayers.Map('map',{
-			projection:proj4326
+			controls: [
+		        new OpenLayers.Control.Navigation({
+		            dragPanOptions: {
+		                enableKinetic: true
+		            }
+		        }),
+		        new OpenLayers.Control.Attribution(),
+		        new OpenLayers.Control.Zoom({
+		            zoomInId: "customZoomIn",
+		            zoomOutId: "customZoomOut"
+		        })
+		    ],
+		    projection:proj4326
 		});
-		map.addControl(new OpenLayers.Control.LayerSwitcher());
 		map.addLayer(new OpenLayers.Layer.Stamen("toner"));
     	map.addLayer(new OpenLayers.Layer.OSM("OpenCycleMap", ['http://tile.opencyclemap.org/cycle/${z}/${x}/${y}.png']));
 
@@ -63,7 +105,7 @@
                 "http://c.tiles.mapbox.com/v3/amritkarma.map-6c5zckhu/${z}/${x}/${y}.png",
                 "http://d.tiles.mapbox.com/v3/amritkarma.map-6c5zckhu/${z}/${x}/${y}.png"
             ], {
-                attribution: "Tiles &copy; <a href='http://mapbox.com/'>MapBox</a>",
+                attribution: "&copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors; Tiles &copy; <a href='http://mapbox.com/'>MapBox</a>",
                 sphericalMercator: true,
                 wrapDateLine: false,
                 // numZoomLevels: 5,
@@ -185,14 +227,18 @@
 		
 		var styleschool = new OpenLayers.Style({
 			label:"${name}",
-			fontColor:"yellow",
+			fillColor:"${getColor}",
 			fontSize:"12",
+			fontColor:"yellow",
 			graphicWidth: "${graphicWidth}",
 			graphicHeight: "${graphicHeight}",
 			externalGraphic: "${symbol}"
 		},
 		{
 			context:{
+				getColor: function(feature) {                 
+					return  feature.attributes.count > 10 ? '#0000FF' :feature.attributes.count > 5 ? '#00FF00' :feature.attributes.count >= 0 ? '#FF0000' :'#FED976';
+				},
 				name: function(feature){
 					return(feature.cluster) ? (feature.attributes.count) : "";
 				},
@@ -298,7 +344,7 @@
 				new OpenLayers.Strategy.Cluster({distance: 30, threshold: 2})//for clusturing 2 schools within 50 pixel distance.
 			],
 			protocol: new OpenLayers.Protocol.HTTP({
-				url: "data/education_revised.geojson",   //<-- relative or absolute URL to your .osm file
+				url: "data/education_centroid.geojson",   //<-- relative or absolute URL to your .osm file
 				format: new OpenLayers.Format.GeoJSON()
 			}),
 			projection: map.displayProjection,
@@ -385,7 +431,7 @@
 		map.setBaseLayer(mapbox);
 	</script>
 
-	<div style="position:absolute; top:20px; left:50px; font:aerial; fontcolor=blue; z-index:999;">
+	<div style="position:absolute; top:20px; left:80px; font:aerial; fontcolor=blue; z-index:999;">
 		<label class="classname">
 		<input type="radio" name="togglelayer" checked onClick="map.removeLayer(healthfacilities);map.addLayer(odri_schools);">Education</input>
 		</label>
