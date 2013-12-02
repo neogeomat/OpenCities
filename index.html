@@ -38,10 +38,6 @@
 </head>
 <body>
 	<div id='map'>
-		<div id="customZoom">
-                <a href="#customZoomIn" id="customZoomIn">in</a>
-                <a href="#customZoomOut" id="customZoomOut">out</a>
-        </div>	
     </div>
 	<script type="text/javascript">
 		function toTitleCase(str){
@@ -72,10 +68,7 @@
 		            }
 		        }),
 		        new OpenLayers.Control.Attribution(),
-		        new OpenLayers.Control.Zoom({
-		            zoomInId: "customZoomIn",
-		            zoomOutId: "customZoomOut"
-		        })
+		        new OpenLayers.Control.Zoom()
 		    ],
 		    projection:proj4326
 		});
@@ -344,7 +337,7 @@
 				new OpenLayers.Strategy.Cluster({distance: 30, threshold: 2})//for clusturing 2 schools within 50 pixel distance.
 			],
 			protocol: new OpenLayers.Protocol.HTTP({
-				url: "data/education_centroid.geojson",   //<-- relative or absolute URL to your .osm file
+				url: "data/education_revised.geojson",   //<-- relative or absolute URL to your .osm file
 				format: new OpenLayers.Format.GeoJSON()
 			}),
 			projection: map.displayProjection,
@@ -431,10 +424,12 @@
 		map.setBaseLayer(mapbox);
 	</script>
 
-	<div style="position:absolute; top:20px; left:80px; font:aerial; fontcolor=blue; z-index:999;">
+	<div style="position:absolute; top:20px; right:80px; font:aerial; fontcolor=blue; z-index:999;">
 		<label class="classname">
 		<input type="radio" name="togglelayer" checked onClick="map.removeLayer(healthfacilities);map.addLayer(odri_schools);">Education</input>
 		</label>
+	<br>
+	</br>
 		<label class="classname">
 		<input type="radio" name="togglelayer" onClick="map.removeLayer(odri_schools);map.addLayer(healthfacilities);">Health</input>
 		</label>
