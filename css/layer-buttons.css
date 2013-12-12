@@ -29,6 +29,7 @@
 	text-decoration:none;
 	text-align:center;
 	text-shadow:1px 1px 0px #cd8a15;
+	text-align: left;
 }.classname:hover {
 	background-color:#d29105;
 }.classname:active {
