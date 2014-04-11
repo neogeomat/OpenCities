@@ -60,6 +60,9 @@
 		var centerY = 27.7;//5456645.24607268//49.245339757767844;//3212000;
 		var center = new OpenLayers.LonLat(centerX, centerY);
 		var zoom = 11;
+
+		var education_list_autocomplete = {};
+		var health_list_autocomplete = {};
 		var map = new OpenLayers.Map('map',{
 			controls: [
 		        new OpenLayers.Control.Navigation({
@@ -100,7 +103,7 @@
         
         function onFeatureSelect(feature) {
             selectedFeature = feature;
-            var PopupPos, leftOffset = 45, topOffset = 55, rightOffset=0;
+            var PopupPos, leftOffset = 45, topOffset = 105, rightOffset=0;
 		    var MapExtent = map.getExtent();
 		    var Reso = map.getResolution();
 		    var MapXCenter = map.getExtent().getCenterPixel().x;
@@ -324,11 +327,11 @@
 				format: new OpenLayers.Format.GeoJSON()
 			}),
 			projection: map.displayProjection,
-			styleMap: new OpenLayers.StyleMap({'default':styleschool})
+			styleMap: new OpenLayers.StyleMap({'default':styleschool}),
+
 		}
 		);
-		map.addLayer(odri_schools);
-
+		
 		var healthfacilities = new OpenLayers.Layer.Vector('Health Facilities',{
 			strategies: [
 				//strategy
@@ -342,6 +345,36 @@
 			projection: map.displayProjection,
 			styleMap: new OpenLayers.StyleMap({'default':health_style})
 		});
+		// create an object referenced by name and referencing location
+		odri_schools.events.on({'beforefeatureadded':function load_into_autocomplete(features) {
+			// console.log(features);
+			// debugger;
+			if(features.feature.cluster){
+				features.feature.cluster.forEach(function (element) {
+					// console.log(element.attributes.name);
+					education_list_autocomplete[element.attributes.name] = element.geometry;
+				})
+			}else{
+				education_list_autocomplete[features.feature.attributes.name] = features.feature.geometry;
+			}
+
+			// body...
+		}})
+		healthfacilities.events.on({'beforefeatureadded':function load_into_autocomplete(features) {
+			// console.log(features);
+			// debugger;
+			if(features.feature.cluster){
+				features.feature.cluster.forEach(function (element) {
+					// console.log(element.attributes.name);
+					health_list_autocomplete[element.attributes.name] = element.geometry;
+				})
+			}else{
+				health_list_autocomplete[features.feature.attributes.name] = features.feature.geometry;
+			}
+
+			// body...
+		}})
+		map.addLayer(odri_schools);
 		// map.addLayer(healthfacilities);
 		// healthfacilities.display(false);
 
