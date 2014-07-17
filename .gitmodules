@@ -1,0 +1,6 @@
+[submodule "js/lib/leaflet"]
+	path = js/lib/leaflet
+	url = https://github.com/Leaflet/Leaflet.git
+[submodule "js/lib/leaflet-ajax"]
+	path = js/lib/leaflet-ajax
+	url = https://github.com/calvinmetcalf/leaflet-ajax.git
