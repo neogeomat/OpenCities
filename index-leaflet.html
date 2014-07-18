@@ -4,6 +4,8 @@
 	<link rel="stylesheet" type="text/css" href="js/lib/leaflet-0.7/leaflet.css">
 	<link rel="stylesheet" type="text/css" href="js/lib/leaflet.markercluster/leaflet.markercluster.css">
 	<link rel="stylesheet" type="text/css" href="js/lib/leaflet.markercluster/MarkerCluster.Default.css">
+
+	<script type="text/javascript" src="js/lib/jquery-1.7.2.min.js"></script>
 	<script type="text/javascript" src="js/lib/leaflet-0.7/leaflet.js"></script>
 	<script type="text/javascript" src="js/lib/spin.min.js"></script>
 	<script type="text/javascript" src="js/lib/leaflet.spin.js"></script>
@@ -18,6 +20,8 @@
 	</style>
 </head>
 <body>
+	<div id = "filterLayout"></div>
+	<input type="button" id="hospitalFilter" value="hospital">
 	<div id='map'>
     </div>
 	<script type="text/javascript">
@@ -45,23 +49,70 @@
 
 		var clusterMarkers = L.markerClusterGroup();
 		var geojsonlayer = L.geoJson.ajax();
+		// geojsonlayer.addTo(map);
 		// geojsonlayer.addUrl("data/education_centroid.geojson");
 		geojsonlayer.addUrl("data/health_centroid.geojson");
-		// geojsonlayer.filter = function (feature){return feature.properties.amenity == "clinic"};
+		// geojsonlayer.addUrl("data/health.geojson");
+		// geojsonlayer.filter = function (feature){return feature.properties.amenity == "hospital"};
 		clusterMarkers.addTo(map);
 		
 		geojsonlayer.on("data:loaded",function(){
-			console.log("(Object.keys(geojsonlayer._layers).length) = ",Object.keys(geojsonlayer._layers).length);
+			// console.log("(Object.keys(geojsonlayer._layers).length) = ",Object.keys(geojsonlayer._layers).length);
 			geojsonlayer.eachLayer(function(c){
-			// console.log("layer=",c);
-			c.bindPopup(c.feature.properties.amenity);
-			clusterMarkers.addLayer(L.marker([c.feature.geometry.coordinates[1],c.feature.geometry.coordinates[0]],{title:c.feature.properties.name}))
+				// console.log("layer=",c);
+				c.bindPopup(c.feature.properties.name);
+				clusterMarkers.addLayer(L.marker([c.feature.geometry.coordinates[1],c.feature.geometry.coordinates[0]],{title:c.feature.properties.amenity}))
 			});
-			console.log("inside first");
-			
+			// console.log("inside first");			
 		});
-		console.log("outside first");
+		// console.log("outside first");
 		
+
+		// Selecctor panel
+		var filterLayout = {
+			"amenity":{
+				"hospital":null,
+				"dentist":null,
+				"clinic":null,
+				"health_post":null
+			},
+			"operator_t":{
+				"private":null,
+				"government":null
+			}
+		}
+
+		// generate filterLayout in HTML
+		filterLayoutDiv = $("#filterLayout");
+		for(key in filterLayout){
+			keyClass = $("<div>",{
+				text:key,
+				class:"keyClass"
+			}).appendTo(filterLayoutDiv);
+
+			for(value in filterLayout[key]){
+				console.log('value ' , value);
+				valueClass = $("<label>",{
+					text:value,
+					name:key,
+					value:value,
+					class:"valueClass"
+				}).appendTo(keyClass);
+				valueClass.prepend("<input type='checkbox' name = '"+key+"' id='"+key+":"+value+"' checked></input>");
+			}
+		}
+		
+		// to be invoked on click
+		$("#hospitalFilter").click(function(){
+			clusterMarkers.clearLayers();
+		geojsonlayer.eachLayer(function(c){
+				// console.log("layer=",c);
+
+				console.log("clearing hospitals")
+				c.bindPopup(c.feature.properties.name);
+				if(c.feature.properties.amenity == "hospital"){
+				clusterMarkers.addLayer(L.marker([c.feature.geometry.coordinates[1],c.feature.geometry.coordinates[0]],{title:c.feature.properties.amenity}))}
+			})})
 	</script>
 </body>
 </html>

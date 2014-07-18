@@ -716,9 +716,9 @@ L.GeoJSON.AJAX = L.GeoJSON.extend({
             });
         } else {
             this.filter = func;
-            console.log("this=", this);
+            // console.log("this=", this);
             this.eachLayer(function(a) {
-                console.log("a=", a);
+                // console.log("a=", a);
                 // console.log("refilter=", a(b.feature));
                 if (func(a.feature)) {
                     a.setStyle({
