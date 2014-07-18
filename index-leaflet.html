@@ -39,6 +39,7 @@
 	</script>
 	<script type="text/javascript">
 		var testObject;
+		var testCondition;
 		var tiles = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
 				maxZoom: 18,
 				attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors, Points &copy 2012 LINZ'
@@ -91,24 +92,32 @@
 			}).appendTo(filterLayoutDiv);
 
 			for(value in filterLayout[key]){
-				console.log('value ' , value);
+
 				valueClass = $("<label>",{
 					text:value,
 					name:key,
 					value:value,
 					class:"valueClass"
 				}).appendTo(keyClass);
-				valueClass.prepend("<input type='checkbox' name = '"+key+"' id='"+key+":"+value+"' checked></input>");
+				valueClass.prepend("<input type='checkbox' name = '"+key+"' value='"
+					+value+"'id='"+key+":"+value+"' checked='true'></input>");
 			}
 		}
 		
 		// to be invoked on click
-		$("#hospitalFilter").click(function(){
+		$(".valueClass").click(function(){
+			var checkedItems = $( "input:checked" )
 			clusterMarkers.clearLayers();
-		geojsonlayer.eachLayer(function(c){
-				// console.log("layer=",c);
-
-				console.log("clearing hospitals")
+			testCondition ={};
+			checkedItems.each(function(item){
+				element = $(checkedItems[item]);
+				if(!testCondition[element.attr("name")]){
+					testCondition[element.attr("name")] = []
+				}
+				testCondition[element.attr("name")].push(element.attr("value"));
+				testObject = element;
+			});
+			geojsonlayer.eachLayer(function(c){
 				c.bindPopup(c.feature.properties.name);
 				if(c.feature.properties.amenity == "hospital"){
 				clusterMarkers.addLayer(L.marker([c.feature.geometry.coordinates[1],c.feature.geometry.coordinates[0]],{title:c.feature.properties.amenity}))}
