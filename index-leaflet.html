@@ -11,6 +11,7 @@
 	<script type="text/javascript" src="js/lib/leaflet.spin.js"></script>
 	<script type="text/javascript" src="js/lib/leaflet.ajax.js"></script>
 	<script type="text/javascript" src="js/lib/leaflet.markercluster/leaflet.markercluster.js"></script>
+	<script type="text/javascript" src="js/lib/lodash.min.js"></script>
 
 	<style type="text/css">
 		#map{
@@ -53,6 +54,7 @@
 		// geojsonlayer.addTo(map);
 		// geojsonlayer.addUrl("data/education_centroid.geojson");
 		geojsonlayer.addUrl("data/health_centroid.geojson");
+		// geojsonlayer.addUrl("data/health_test.geojson");
 		// geojsonlayer.addUrl("data/health.geojson");
 		// geojsonlayer.filter = function (feature){return feature.properties.amenity == "hospital"};
 		clusterMarkers.addTo(map);
@@ -75,11 +77,13 @@
 				"hospital":null,
 				"dentist":null,
 				"clinic":null,
-				"health_post":null
+				"health_post":null,
+				"health_center":null
 			},
 			"operator_t":{
 				"private":null,
-				"government":null
+				"government":null,
+				"community":null
 			}
 		}
 
@@ -100,7 +104,7 @@
 					class:"valueClass"
 				}).appendTo(keyClass);
 				valueClass.prepend("<input type='checkbox' name = '"+key+"' value='"
-					+value+"'id='"+key+":"+value+"' checked='true'></input>");
+					+value+"'id='"+key+":"+value+"'></input>");
 			}
 		}
 		
@@ -119,9 +123,25 @@
 			});
 			geojsonlayer.eachLayer(function(c){
 				c.bindPopup(c.feature.properties.name);
-				if(c.feature.properties.amenity == "hospital"){
+				var toDispaly = true;
+				for(var key in testCondition){
+					if(toDispaly){
+						for(var value in testCondition[key]){
+							if(c.feature.properties[key] == testCondition[key][value]){
+								toDispaly = true;
+								break;
+							}else{
+								toDispaly = false;
+							}
+						}
+					}
+				}
+				if(toDispaly){
 				clusterMarkers.addLayer(L.marker([c.feature.geometry.coordinates[1],c.feature.geometry.coordinates[0]],{title:c.feature.properties.amenity}))}
-			})})
+			})
+		})
+
+
 	</script>
 </body>
 </html>
