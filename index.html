@@ -30,7 +30,7 @@
 			projection:proj4326
 		});
 		map.addControl(new OpenLayers.Control.LayerSwitcher());
-		map.addLayer(new OpenLayers.Layer.Stamen("toner"));
+		// map.addLayer(new OpenLayers.Layer.Stamen("toner"));
 		var cycleOSM = new OpenLayers.Layer.OSM("OpenCycleMap", ['https://tile.opencyclemap.org/cycle/${z}/${x}/${y}.png']);
 		map.addLayer(cycleOSM);
     	//mapquest tiles
