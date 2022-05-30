@@ -6,7 +6,7 @@
 	<!-- // <script src="https://localhost/OpenLayers-2.12/addins/stamen-maps.js" type="text/javascript"></script> -->
 	<script src="https://openlayers.org/api/2.12/OpenLayers.light.js" type="text/javascript"></script>
 	<script type="text/javascript" src="js/Cluster.js"></script>
-	<script type="text/javascript" src="https://maps.stamen.com/js/tile.stamen.js?v1.2.3"></script>
+	<!-- <script type="text/javascript" src="https://maps.stamen.com/js/tile.stamen.js?v1.2.3"></script> -->
 	<link rel="stylesheet" type="text/css" href="css/layer-buttons.css"/>
 	<link rel="stylesheet" type="text/css" href="css/popup-table.css"/>
 </head>
@@ -63,7 +63,7 @@
                 isBaseLayer:true
             }
         );
-        map.addLayer(mapbox);
+        // map.addLayer(mapbox);
         map.setCenter(center.transform(proj4326,proj900913),zoom);
         // map.setCenter(center,zoom);
        
